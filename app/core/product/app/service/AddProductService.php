@@ -11,7 +11,7 @@ use App\core\product\model\PresentationType;
 use App\core\product\model\Product;
 use App\core\product\model\ProductRepository;
 
-readonly class AddProductService implements AddProduct
+final readonly class AddProductService implements AddProduct
 {
     public function __construct(
         private ProductRepository $repository
@@ -23,14 +23,14 @@ readonly class AddProductService implements AddProduct
     {
         $presentationType = new PresentationType($request->presentationType);
         $concentration = new Concentration(
-            $request->concentrationAmount,
-            $request->concentrationUnit
+            unit: $request->concentrationUnit,
+            value: $request->concentrationValue
         );
         $product = Product::create(
-            $request->name,
-            $request->description,
-            $presentationType,
-            $concentration
+            name: $request->name,
+            description: $request->description,
+            presentationType: $presentationType,
+            concentration: $concentration
         );
         $this->repository->save($product);
         return ProductMapper::toProductResponse($product);

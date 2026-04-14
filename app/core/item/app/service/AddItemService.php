@@ -20,10 +20,10 @@ final readonly class AddItemService implements AddItem
     public function execute(AddItemRequest $request): ItemResponse
     {
         $item = Item::create(
-            $request->productId,
-            $request->inventoryId,
-            $request->quantity,
-            $request->expirationDate
+            productId: $request->productId,
+            inventoryId: $request->inventoryId,
+            totalQuantity: $request->quantity,
+            expirationDate: $request->expirationDate
         );
         $this->inventoryItemRepository->save($item);
         return ItemMapper::toItemResponse($item);
