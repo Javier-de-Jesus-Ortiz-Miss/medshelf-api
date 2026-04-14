@@ -13,9 +13,9 @@ class ItemRepositoryAdapter implements ItemRepository
         return ItemStorage::$storage[$id] ?? null;
     }
 
-    public function save(Item $inventoryItem): void
+    public function save(Item $item): void
     {
-        ItemStorage::$storage[$inventoryItem->getId()] = $inventoryItem;
+        ItemStorage::$storage[$item->getId()] = $item;
     }
 
     public function deleteById(string $id): void

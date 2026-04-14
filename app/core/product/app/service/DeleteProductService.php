@@ -6,7 +6,7 @@ use App\core\product\app\port\DeleteProduct;
 use App\core\product\model\ProductRepository;
 use InvalidArgumentException;
 
-readonly class DeleteProductService implements DeleteProduct
+final readonly class DeleteProductService implements DeleteProduct
 {
     public function __construct(
         private ProductRepository $repository

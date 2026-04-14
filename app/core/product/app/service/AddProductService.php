@@ -11,7 +11,7 @@ use App\core\product\model\PresentationType;
 use App\core\product\model\Product;
 use App\core\product\model\ProductRepository;
 
-readonly class AddProductService implements AddProduct
+final readonly class AddProductService implements AddProduct
 {
     public function __construct(
         private ProductRepository $repository

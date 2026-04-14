@@ -5,7 +5,7 @@ namespace App\core\item\app\mapping;
 use App\core\item\app\dto\response\ItemResponse;
 use App\core\item\model\Item;
 
-class ItemMapper
+final class ItemMapper
 {
     private function __construct()
     {
@@ -14,13 +14,13 @@ class ItemMapper
     public static function toItemResponse(Item $inventoryItem): ItemResponse
     {
         return new ItemResponse(
-            $inventoryItem->getId(),
-            $inventoryItem->getProductId(),
-            $inventoryItem->getInventoryId(),
-            $inventoryItem->getTotalQuantity(),
-            $inventoryItem->getQuantity(),
-            $inventoryItem->getExpirationDate(),
-            $inventoryItem->getAddedDate()
+            id: $inventoryItem->getId(),
+            productId: $inventoryItem->getProductId(),
+            inventoryId: $inventoryItem->getInventoryId(),
+            totalQuantity: $inventoryItem->getTotalQuantity(),
+            quantity: $inventoryItem->getQuantity(),
+            expirationDate: $inventoryItem->getExpirationDate(),
+            addedDate: $inventoryItem->getAddedDate()
         );
     }
 }
