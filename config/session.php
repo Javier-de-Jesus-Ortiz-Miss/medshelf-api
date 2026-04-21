@@ -32,7 +32,7 @@ return [
     |
     */
 
-    'lifetime' => (int)env('SESSION_LIFETIME', 120),
+    'lifetime' => (int) env('SESSION_LIFETIME', 120),
 
     'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
 
@@ -110,7 +110,7 @@ return [
     |
     | Some session drivers must manually sweep their storage location to get
     | rid of old sessions from storage. Here are the chances that it will
-    | happen on a given Request. By default, the odds are 2 out of 100.
+    | happen on a given request. By default, the odds are 2 out of 100.
     |
     */
 
@@ -129,7 +129,7 @@ return [
 
     'cookie' => env(
         'SESSION_COOKIE',
-        Str::slug((string)env('APP_NAME', 'laravel')) . '-session'
+        Str::slug((string) env('APP_NAME', 'laravel')).'-session'
     ),
 
     /*
