@@ -20,7 +20,7 @@ final readonly class CreateStorageUnitService implements CreateStorageUnit
     public function execute(CreateStorageUnitRequest $request): StorageUnitResponse
     {
         $inventory = StorageUnit::create(
-            houseId: $request->ownerId,
+            houseId: $request->houseId,
             name: $request->name
         );
         $this->repository->save($inventory);

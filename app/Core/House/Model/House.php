@@ -13,6 +13,7 @@ final class House
         private string $id,
         private string $ownerId,
         private string $name,
+        /** @var Place[] */
         private array  $places,
         private Carbon $createdAt
     )

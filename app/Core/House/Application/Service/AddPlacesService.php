@@ -4,10 +4,10 @@ namespace App\Core\House\Application\Service;
 
 use App\Core\House\Application\Dto\Request\ModifyPlacesRequest;
 use App\Core\House\Application\Dto\Response\HouseResponse;
+use App\Core\House\Application\Mapping\HouseMapper;
 use App\Core\House\Application\Port\AddPlaces;
 use App\Core\House\Model\HouseRepository;
 use App\Core\Shared\Domain\Place;
-use App\Core\Storage\App\Mapping\HouseMapper;
 use InvalidArgumentException;
 
 final readonly class AddPlacesService implements AddPlaces

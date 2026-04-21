@@ -17,6 +17,7 @@ final class StorageUnitMapper
             id: $inventory->getId(),
             houseId: $inventory->getHouseId(),
             name: $inventory->getName(),
+            createdAt: $inventory->getCreatedAt()
         );
     }
 }

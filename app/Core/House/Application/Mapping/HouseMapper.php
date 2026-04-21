@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Storage\App\Mapping;
+namespace App\Core\House\Application\Mapping;
 
 use App\Core\House\Application\Dto\Response\HouseResponse;
 use App\Core\House\Model\House;

@@ -19,8 +19,8 @@ final readonly class ModifyStorageUnitService implements ModifyStorageUnit
 
     public function execute(ModifyStorageUnitRequest $request): StorageUnitResponse
     {
-        $inventory = $this->repository->findById($request->inventoryId) ??
-            throw new InvalidArgumentException("Inventory with id $request->inventoryId not found");
+        $inventory = $this->repository->findById($request->houseId) ??
+            throw new InvalidArgumentException("Storage unit with id $request->houseId not found");
         $inventory->changeName($request->name);
         $this->repository->save($inventory);
         return StorageUnitMapper::toStorageUnitResponse($inventory);
