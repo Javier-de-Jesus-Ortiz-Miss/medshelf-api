@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Providers\mocks\ItemStorage;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,9 +18,5 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        ItemStorage::load();
-        $this->app->terminating(function () {
-            ItemStorage::persist();
-        });
     }
 }
