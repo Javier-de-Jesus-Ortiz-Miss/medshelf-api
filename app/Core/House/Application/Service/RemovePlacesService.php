@@ -2,9 +2,7 @@
 
 namespace App\Core\House\Application\Service;
 
-use App\Core\House\Application\Dto\Request\ModifyPlacesRequest;
-use App\Core\House\Application\Dto\Response\HouseResponse;
-use App\Core\House\Application\Mapping\HouseMapper;
+use App\Core\House\Application\Dto\Request\RemovePlacesRequest;
 use App\Core\House\Application\Port\RemovePlaces;
 use App\Core\House\Model\HouseRepository;
 use InvalidArgumentException;
@@ -18,25 +16,14 @@ final readonly class RemovePlacesService implements RemovePlaces
     {
     }
 
-    public function execute(ModifyPlacesRequest $request): HouseResponse
+    public function execute(RemovePlacesRequest $request): void
     {
-        $house = $this->repository->findByOwnerId($request->ownerId) ??
-            throw new InvalidArgumentException('House not found for owner id: ' . $request->ownerId);
-        $placesNames = $request->placesNames;
-        if (!$placesNames) {
-            throw new InvalidArgumentException('Place names is required');
-        }
-        if (is_string($placesNames)) {
-            $placeName = trim($placesNames);
-            $house->removePlace($placeName);
-        }
-        if (is_array($placesNames)) {
-            foreach ($placesNames as $placeName) {
-                $placeName = trim($placeName);
-                $house->removePlace($placeName);
-            }
+        $house = $this->repository->findById($request->houseId) ??
+            throw new InvalidArgumentException('House not found for owner id: ' . $request->houseId);
+        $placesIds = $request->placeIds;
+        foreach ($placesIds as $placeId) {
+            $house->removePlace($placeId);
         }
         $this->repository->save($house);
-        return HouseMapper::toHouseResponse($house);
     }
 }

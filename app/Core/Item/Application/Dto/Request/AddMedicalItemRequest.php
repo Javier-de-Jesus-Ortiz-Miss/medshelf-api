@@ -8,7 +8,7 @@ readonly class AddMedicalItemRequest
 {
     public function __construct(
         public string $medicalProductId,
-        public string $storageUnitId,
+        public string $placeId,
         public string $totalQuantity,
         public Carbon $expirationDate
     )

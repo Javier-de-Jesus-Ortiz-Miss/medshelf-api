@@ -8,12 +8,12 @@ use Carbon\Carbon;
 final class MedicalProduct
 {
     private function __construct(
-        private string           $id,
-        private string           $name,
-        private string           $description,
-        private PresentationType $presentationType,
-        private Concentration    $concentration,
-        private Carbon           $addedDate,
+        protected string           $id,
+        protected string           $name,
+        protected string           $description,
+        protected PresentationType $presentationType,
+        protected Concentration    $concentration,
+        protected Carbon           $addedDate,
     )
     {
     }

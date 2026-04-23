@@ -6,7 +6,7 @@ readonly class StorageUnitResume
 {
     public function __construct(
         public string $id,
-        public string $houseId,
+        public string $placeId,
         public string $name
     )
     {

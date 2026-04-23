@@ -11,41 +11,24 @@ final class MedicalItem
     private const int SOON_TO_EXPIRE_DAYS = 3;
 
     private function __construct(
-        private string $id,
-        private string $medicalProductId,
-        private string $storageUnitId,
-        private int    $totalQuantity,
-        private int    $availableQuantity,
-        private Carbon $expirationDate,
-        private Carbon $addedDate
+        protected string $id,
+        protected string $medicalProductId,
+        protected string $storageUnitId,
+        protected int    $totalQuantity,
+        /** @var Consumption[] */
+        protected array  $consumptions,
+        protected Carbon $expirationDate,
+        protected Carbon $addedDate
     )
     {
-    }
-
-    public static function create(
-        string $productId,
-        string $inventoryId,
-        int    $totalQuantity,
-        Carbon $expirationDate
-    ): MedicalItem
-    {
-        return new self(
-            Utils::generateUUIDV4(),
-            $productId,
-            $inventoryId,
-            $totalQuantity,
-            $totalQuantity,
-            $expirationDate,
-            Carbon::now()
-        );
     }
 
     public static function load(
         string $id,
         string $productId,
-        string $inventoryId,
+        string $storageUnitId,
         int    $totalQuantity,
-        int    $quantity,
+        array  $consumptions,
         Carbon $expirationDate,
         Carbon $addedDate
     ): MedicalItem
@@ -53,9 +36,9 @@ final class MedicalItem
         return new self(
             $id,
             $productId,
-            $inventoryId,
+            $storageUnitId,
             $totalQuantity,
-            $quantity,
+            $consumptions,
             $expirationDate,
             $addedDate
         );
@@ -81,9 +64,12 @@ final class MedicalItem
         return $this->totalQuantity;
     }
 
-    public function getAvailableQuantity(): int
+    /**
+     * @return Consumption[]
+     */
+    public function getConsumptions(): array
     {
-        return $this->availableQuantity;
+        return $this->consumptions;
     }
 
     public function getExpirationDate(): Carbon
@@ -96,17 +82,46 @@ final class MedicalItem
         return $this->addedDate;
     }
 
-    public function consume(int $quantity = 1): void
+    public function consume(int $quantity = 1): Consumption
     {
-        if ($quantity > $this->availableQuantity) {
+        if ($quantity > $this->getAvailableQuantity()) {
             throw new InvalidArgumentException('Not enough quantity in item item.');
         }
-        $this->availableQuantity -= $quantity;
+        $consumption = Consumption::create($this->id, $quantity);
+        $this->consumptions[] = $consumption;
+
+        return $consumption;
+    }
+
+    public function getAvailableQuantity(): int
+    {
+        $consumed = array_sum(
+            array_map(fn(Consumption $c) => $c->getAmount(), $this->consumptions)
+        );
+        return $this->totalQuantity - $consumed;
+    }
+
+    public static function create(
+        string $productId,
+        string $storageUnitId,
+        int    $totalQuantity,
+        Carbon $expirationDate
+    ): MedicalItem
+    {
+        return new self(
+            Utils::generateUUIDV4(),
+            $productId,
+            $storageUnitId,
+            $totalQuantity,
+            [],
+            $expirationDate,
+            Carbon::now()
+        );
     }
 
     public function isEmpty(): bool
     {
-        return $this->availableQuantity === 0;
+        return $this->getAvailableQuantity() === 0;
     }
 
     public function isExpired(): bool

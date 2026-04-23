@@ -6,23 +6,23 @@ use App\Core\Storage\Application\Dto\Request\ModifyStorageUnitRequest;
 use App\Core\Storage\Application\Dto\Response\StorageUnitResponse;
 use App\Core\Storage\Application\Mapping\StorageUnitMapper;
 use App\Core\Storage\Application\Port\ModifyStorageUnit;
-use App\Core\Storage\Model\StorageRepository;
+use App\Core\Storage\Model\StorageUnitRepository;
 use InvalidArgumentException;
 
 final readonly class ModifyStorageUnitService implements ModifyStorageUnit
 {
     public function __construct(
-        private StorageRepository $repository
+        private StorageUnitRepository $repository
     )
     {
     }
 
     public function execute(ModifyStorageUnitRequest $request): StorageUnitResponse
     {
-        $inventory = $this->repository->findById($request->houseId) ??
+        $storageUnit = $this->repository->findById($request->houseId) ??
             throw new InvalidArgumentException("Storage unit with id $request->houseId not found");
-        $inventory->changeName($request->name);
-        $this->repository->save($inventory);
-        return StorageUnitMapper::toStorageUnitResponse($inventory);
+        $storageUnit->changeName($request->name);
+        $this->repository->save($storageUnit);
+        return StorageUnitMapper::toStorageUnitResponse($storageUnit);
     }
 }

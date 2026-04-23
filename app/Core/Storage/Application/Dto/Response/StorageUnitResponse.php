@@ -8,7 +8,7 @@ readonly class StorageUnitResponse
 {
     public function __construct(
         public string $id,
-        public string $houseId,
+        public string $placeId,
         public string $name,
         public Carbon $createdAt
     )

@@ -2,20 +2,21 @@
 
 namespace App\Core\House\Model;
 
-use App\Core\Shared\Domain\Place;
 use App\Core\Shared\Domain\Utils;
 use Carbon\Carbon;
 use InvalidArgumentException;
 
 final class House
 {
+    private const int MAX_PLACES = 10;
+
     private function __construct(
-        private string $id,
-        private string $ownerId,
-        private string $name,
+        protected string $id,
+        protected string $ownerId,
+        protected string $name,
         /** @var Place[] */
-        private array  $places,
-        private Carbon $createdAt
+        protected array  $places,
+        protected Carbon $createdAt
     )
     {
     }
@@ -41,11 +42,6 @@ final class House
         return $this->ownerId;
     }
 
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
     public function getCreatedAt(): Carbon
     {
         return $this->createdAt;
@@ -61,43 +57,53 @@ final class House
 
     public function addPlace(Place $place): void
     {
-        if ($this->existsPlace($place->name)) {
-            throw new InvalidArgumentException("Place with name '$place->name' already exists in the house.");
+        if (count($this->places) >= self::MAX_PLACES) {
+            throw new InvalidArgumentException("Cannot add more than " . self::MAX_PLACES . " places to the house.");
+        }
+        if ($this->existsPlace($place->getId())) {
+            throw new InvalidArgumentException("Place with name '{$place->getId()}' already exists in the house.");
         }
         $this->places[] = $place;
     }
 
-    public function existsPlace(string $name): bool
+    public function existsPlace(string $placeId): bool
     {
         foreach ($this->places as $place) {
-            if ($place->name === $name) {
+            if ($place->getId() === $placeId) {
                 return true;
             }
         }
         return false;
     }
 
-    public function removePlace(string $name): void
+    public function getId(): string
     {
-        if (!in_array($name, $this->places)) {
-            throw new InvalidArgumentException("Place with name '$name' does not exist in the house.");
-        }
-        $this->places = array_filter($this->places, fn(Place $p) => $p->name !== $name);
+        return $this->id;
     }
 
-    public function findPlace(string $name): ?Place
+    public function removePlace(string $placeId): void
+    {
+        if (!$this->existsPlace($placeId)) {
+            throw new InvalidArgumentException("Place '$placeId' does not exists.");
+        }
+        $this->places = array_filter($this->places, function (Place $place) use ($placeId) {
+            return $place->getId() !== $placeId;
+        });
+    }
+
+    public function findPlace(string $placeId): ?Place
     {
         foreach ($this->places as $place) {
-            if ($place->name === $name) {
+            if ($place->getId() === $placeId) {
                 return $place;
             }
         }
         return null;
     }
 
-    public function getId(): string
+    public function getName(): string
     {
-        return $this->id;
+        return $this->name;
     }
 
     public function changeName(?string $newName): void

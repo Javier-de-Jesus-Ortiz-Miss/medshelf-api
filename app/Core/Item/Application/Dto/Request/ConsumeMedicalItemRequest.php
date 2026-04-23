@@ -6,7 +6,7 @@ readonly class ConsumeMedicalItemRequest
 {
     public function __construct(
         public string $medicalItemId,
-        public int    $quantity
+        public int    $amount,
     )
     {
     }

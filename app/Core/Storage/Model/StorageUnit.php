@@ -9,7 +9,7 @@ final class StorageUnit
 {
     private function __construct(
         private string $id,
-        private string $houseId,
+        private string $placeId,
         private string $name,
         private Carbon $createdAt
     )
@@ -17,11 +17,11 @@ final class StorageUnit
     }
 
     public static function create(
-        string $houseId,
+        string $placeId,
         string $name
     ): StorageUnit
     {
-        return new self(Utils::generateUUIDV4(), $houseId, $name, Carbon::now());
+        return new self(Utils::generateUUIDV4(), $placeId, $name, Carbon::now());
     }
 
     public function getId(): string
@@ -29,9 +29,9 @@ final class StorageUnit
         return $this->id;
     }
 
-    public function getHouseId(): string
+    public function getPlaceId(): string
     {
-        return $this->houseId;
+        return $this->placeId;
     }
 
     public function getName(): string

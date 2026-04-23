@@ -2,7 +2,9 @@
 
 namespace App\Core\Item\Application\Mapping;
 
+use App\Core\Item\Application\Dto\Response\ConsumptionResponse;
 use App\Core\Item\Application\Dto\Response\MedicalItemResponse;
+use App\Core\Item\Model\Consumption;
 use App\Core\Item\Model\MedicalItem;
 
 final class MedicalItemMapper
@@ -11,16 +13,26 @@ final class MedicalItemMapper
     {
     }
 
-    public static function toItemResponse(MedicalItem $inventoryItem): MedicalItemResponse
+    public static function toItemResponse(MedicalItem $medicalItem, string $placeId): MedicalItemResponse
     {
         return new MedicalItemResponse(
-            id: $inventoryItem->getId(),
-            medicalProductId: $inventoryItem->getMedicalProductId(),
-            storageUnitId: $inventoryItem->getStorageUnitId(),
-            totalQuantity: $inventoryItem->getTotalQuantity(),
-            availableQuantity: $inventoryItem->getAvailableQuantity(),
-            expirationDate: $inventoryItem->getExpirationDate(),
-            addedDate: $inventoryItem->getAddedDate()
+            id: $medicalItem->getId(),
+            medicalProductId: $medicalItem->getMedicalProductId(),
+            placeId: $placeId,
+            totalQuantity: $medicalItem->getTotalQuantity(),
+            availableQuantity: $medicalItem->getAvailableQuantity(),
+            expirationDate: $medicalItem->getExpirationDate(),
+            addedDate: $medicalItem->getAddedDate()
+        );
+    }
+
+    public static function toConsumptionResponse(Consumption $consumption): ConsumptionResponse
+    {
+        return new ConsumptionResponse(
+            id: $consumption->getId(),
+            medicalItemId: $consumption->getMedicalItemId(),
+            amount: $consumption->getAmount(),
+            consumptionDate: $consumption->getConsumptionDate()
         );
     }
 }

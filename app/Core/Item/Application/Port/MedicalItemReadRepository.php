@@ -12,7 +12,7 @@ interface MedicalItemReadRepository
 {
     function findById(string $id): ?MedicalItemViewResponse;
 
-    function listByOffset(OffsetRequest $request): OffsetResponse;
+    function listByPlaceIdByOffset(string $placeId, OffsetRequest $request): OffsetResponse;
 
-    function listByCursor(CursorRequest $request): CursorResponse;
+    function listByPlaceIdByCursor(string $placeId, CursorRequest $request): CursorResponse;
 }

@@ -11,13 +11,13 @@ final class StorageUnitMapper
     {
     }
 
-    public static function toStorageUnitResponse(StorageUnit $inventory): StorageUnitResponse
+    public static function toStorageUnitResponse(StorageUnit $storageUnit): StorageUnitResponse
     {
         return new StorageUnitResponse(
-            id: $inventory->getId(),
-            houseId: $inventory->getHouseId(),
-            name: $inventory->getName(),
-            createdAt: $inventory->getCreatedAt()
+            id: $storageUnit->getId(),
+            placeId: $storageUnit->getPlaceId(),
+            name: $storageUnit->getName(),
+            createdAt: $storageUnit->getCreatedAt()
         );
     }
 }

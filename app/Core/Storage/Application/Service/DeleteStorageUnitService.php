@@ -3,12 +3,12 @@
 namespace App\Core\Storage\Application\Service;
 
 use App\Core\Storage\Application\Port\DeleteStorageUnit;
-use App\Core\Storage\Model\StorageRepository;
+use App\Core\Storage\Model\StorageUnitRepository;
 
 final readonly class DeleteStorageUnitService implements DeleteStorageUnit
 {
     public function __construct(
-        private StorageRepository $repository
+        private StorageUnitRepository $repository
     )
     {
     }
