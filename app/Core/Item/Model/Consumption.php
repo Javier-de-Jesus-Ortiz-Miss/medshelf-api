@@ -26,12 +26,12 @@ final class Consumption
         );
     }
 
-    public static function load(string $id, string $itemId, int $quantity, Carbon $consumptionAt): Consumption
+    public static function load(string $id, string $itemId, int $amount, Carbon $consumptionAt): Consumption
     {
         return new self(
             $id,
             $itemId,
-            $quantity,
+            $amount,
             $consumptionAt
         );
     }

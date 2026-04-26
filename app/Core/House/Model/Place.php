@@ -38,5 +38,12 @@ final class Place
     {
         return $this->name;
     }
+
+    public function changeName(string $name): void
+    {
+        if ($name !== $this->name) {
+            $this->name = $name;
+        }
+    }
 }
 

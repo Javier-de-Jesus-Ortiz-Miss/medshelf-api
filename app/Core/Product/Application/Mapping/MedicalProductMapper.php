@@ -17,7 +17,7 @@ final class MedicalProductMapper
             id: $product->getId(),
             name: $product->getName(),
             description: $product->getDescription(),
-            presentationType: $product->getPresentationType()->type,
+            presentationType: $product->getPresentationType()->value,
             concentrationUnit: $product->getConcentration()->unit,
             concentrationValue: $product->getConcentration()->value,
             addedDate: $product->getAddedDate()

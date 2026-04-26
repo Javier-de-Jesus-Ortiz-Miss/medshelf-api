@@ -10,7 +10,9 @@ return new class extends Migration {
         Schema::create('houses', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id')->unique();
-            $table->foreignId('owner_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('owner_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
             $table->string('name');
             $table->timestamps();
         });

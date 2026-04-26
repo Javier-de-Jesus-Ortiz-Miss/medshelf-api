@@ -10,7 +10,9 @@ return new class extends Migration {
         Schema::create('storages', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id')->unique();
-            $table->foreignId('place_id')->constrained('places')->cascadeOnDelete();
+            $table->foreignId('place_id')
+                ->constrained('places')
+                ->cascadeOnDelete();
             $table->string('name');
             $table->timestamps();
         });

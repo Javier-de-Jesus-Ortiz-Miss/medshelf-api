@@ -35,6 +35,25 @@ final class MedicalProduct
         );
     }
 
+    public static function load(
+        string           $id,
+        string           $name,
+        string           $description,
+        PresentationType $presentationType,
+        Concentration    $concentration,
+        Carbon           $addedDate
+    ): MedicalProduct
+    {
+        return new self(
+            $id,
+            $name,
+            $description,
+            $presentationType,
+            $concentration,
+            $addedDate
+        );
+    }
+
     public function getId(): string
     {
         return $this->id;

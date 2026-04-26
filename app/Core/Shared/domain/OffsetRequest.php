@@ -5,8 +5,8 @@ namespace App\Core\Shared\Domain;
 readonly class OffsetRequest
 {
     public function __construct(
-        public int $offset,
-        public int $limit
+        public int $page = 1,
+        public int $size = 10
     )
     {
     }

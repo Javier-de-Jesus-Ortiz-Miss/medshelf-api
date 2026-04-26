@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Core\Product\Application\Dto\Request\AddMedicalProductRequest;
 use App\Core\Product\Application\Dto\Response\MedicalProductResponse;
-use App\Core\Product\Application\Port\AddMedicalProduct;
 use App\Core\Product\Application\Port\MedicalProductReadRepository;
+use App\Core\Product\Application\Service\AddMedicalProduct;
 use App\Core\Shared\Domain\CursorRequest;
 use App\Core\Shared\Domain\OffsetRequest;
 use App\Services\PaginationService;
@@ -59,8 +59,8 @@ class ProductController extends Controller
             $validatedData['name'],
             $validatedData['description'],
             $validatedData['presentationType'],
+            $validatedData['concentrationUnit'],
             $validatedData['concentrationValue'],
-            $validatedData['concentrationUnit']
         );
         $result = $this->addMedicalProduct->execute($data);
         return response()->json($this->buildView($result), 201);

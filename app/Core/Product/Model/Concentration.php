@@ -6,7 +6,7 @@ final readonly class Concentration
 {
     public function __construct(
         public string $unit,
-        public int    $value
+        public float  $value
     )
     {
     }

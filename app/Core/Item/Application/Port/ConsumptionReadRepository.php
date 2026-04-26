@@ -12,7 +12,7 @@ interface ConsumptionReadRepository
 {
     public function findById(string $id): ConsumptionViewResponse;
 
-    public function listByItemIdByCursor(string $itemId, CursorRequest $cursorRequest): CursorResponse;
+    public function listByItemIdByOffset(string $itemId, OffsetRequest $request): OffsetResponse;
 
-    public function listByItemIdByOffset(string $itemId, OffsetRequest $offsetRequest): OffsetResponse;
+    public function listByItemIdByCursor(string $itemId, CursorRequest $request): CursorResponse;
 }

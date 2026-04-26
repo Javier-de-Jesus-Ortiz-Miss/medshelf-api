@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Core\Item\Application\Dto\Request\AddMedicalItemRequest;
 use App\Core\Item\Application\Dto\Response\MedicalItemResponse;
 use App\Core\Item\Application\Dto\Response\MedicalItemViewResponse;
-use App\Core\Item\Application\Port\AddMedicalItem;
-use App\Core\Item\Application\Port\DeleteMedicalItem;
 use App\Core\Item\Application\Port\MedicalItemReadRepository;
+use App\Core\Item\Application\UseCase\AddMedicalItem;
+use App\Core\Item\Application\UseCase\DeleteMedicalItem;
 use App\Core\Shared\Domain\CursorRequest;
 use App\Core\Shared\Domain\OffsetRequest;
 use App\Services\PaginationService;
@@ -49,8 +49,9 @@ class ItemController extends Controller
                 ]
             ],
             'place' => [
-                'id' => $response->storageUnit->placeId,
-                'name' => $response->storageUnit->name,
+                'id' => $response->place->id,
+                'houseId' => $response->place->houseId,
+                'name' => $response->place->name,
             ],
             'totalQuantity' => $response->totalQuantity,
             'availableQuantity' => $response->availableQuantity,

@@ -9,7 +9,7 @@ readonly class AddMedicalProductRequest
         public string $description,
         public string $presentationType,
         public string $concentrationUnit,
-        public int    $concentrationValue
+        public float  $concentrationValue
     )
     {
     }

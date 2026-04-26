@@ -21,6 +21,14 @@ final class House
     {
     }
 
+    /**
+     * @param string $id
+     * @param string $ownerId
+     * @param string $name
+     * @param Place[] $places
+     * @param Carbon $createdAt
+     * @return House
+     */
     public static function load(string $id, string $ownerId, string $name, array $places, Carbon $createdAt): House
     {
         return new self($id, $ownerId, $name, $places, $createdAt);

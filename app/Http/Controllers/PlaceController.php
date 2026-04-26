@@ -8,11 +8,11 @@ use App\Core\House\Application\Dto\Request\RemovePlacesRequest;
 use App\Core\House\Application\Dto\Request\UpdatePlaceRequest;
 use App\Core\House\Application\Dto\Response\PlaceResponse;
 use App\Core\House\Application\Dto\Response\PlaceViewResponse;
-use App\Core\House\Application\Port\AddPlace;
 use App\Core\House\Application\Port\PlaceReadRepository;
-use App\Core\House\Application\Port\RemovePlace;
-use App\Core\House\Application\Port\RemovePlaces;
-use App\Core\House\Application\Port\UpdatePlace;
+use App\Core\House\Application\UseCase\AddPlace;
+use App\Core\House\Application\UseCase\RemovePlace;
+use App\Core\House\Application\UseCase\RemovePlaces;
+use App\Core\House\Application\UseCase\UpdatePlace;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 

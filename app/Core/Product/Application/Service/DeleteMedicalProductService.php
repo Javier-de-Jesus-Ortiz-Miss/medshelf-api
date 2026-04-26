@@ -2,11 +2,10 @@
 
 namespace App\Core\Product\Application\Service;
 
-use App\Core\Product\Application\Port\DeleteMedicalProduct;
 use App\Core\Product\Model\MedicalProductRepository;
 use InvalidArgumentException;
 
-final readonly class DeleteMedicalProductService implements DeleteMedicalProduct
+final readonly class DeleteMedicalProductService
 {
     public function __construct(
         private MedicalProductRepository $repository

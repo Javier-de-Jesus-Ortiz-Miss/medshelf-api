@@ -3,7 +3,7 @@
 namespace App\Core\Item\Application\Dto\Response;
 
 use App\Core\Item\Application\Dto\Data\MedicalProductResume;
-use App\Core\Item\Application\Dto\Data\StorageUnitResume;
+use App\Core\Item\Application\Dto\Data\PlaceResume;
 use Carbon\Carbon;
 
 readonly class MedicalItemViewResponse
@@ -11,7 +11,7 @@ readonly class MedicalItemViewResponse
     public function __construct(
         public string               $id,
         public MedicalProductResume $medicalProduct,
-        public StorageUnitResume    $storageUnit,
+        public PlaceResume          $place,
         public int                  $totalQuantity,
         public int                  $availableQuantity,
         public Carbon               $expirationDate,

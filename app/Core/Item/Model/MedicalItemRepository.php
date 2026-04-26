@@ -11,4 +11,6 @@ interface MedicalItemRepository
     public function deleteById(string $id): void;
 
     public function exists(string $id): bool;
+
+    public function consume(Consumption $consumption): void;
 }

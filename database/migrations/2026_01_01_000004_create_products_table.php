@@ -11,9 +11,9 @@ return new class extends Migration {
             $table->id();
             $table->uuid('public_id')->unique();
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->string('presentation_type');
-            $table->decimal('concentration_value', 8, 2);
+            $table->float('concentration_value');
             $table->string('concentration_unit');
             $table->timestamps();
         });

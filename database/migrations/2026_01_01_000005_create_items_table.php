@@ -10,11 +10,14 @@ return new class extends Migration {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id')->unique();
-            $table->foreignId('storage_id')->constrained('storages')->cascadeOnDelete();
-            $table->foreignId('product_id')->constrained('products')->cascadeOnDelete();
+            $table->foreignId('product_id')
+                ->constrained('products')
+                ->restrictOnDelete();
+            $table->foreignId('storage_id')
+                ->constrained('storages')
+                ->cascadeOnDelete();
             $table->integer('total_quantity');
-            $table->integer('available_quantity');
-            $table->date('expiration_date');
+            $table->timestamp('expiration_date');
             $table->timestamps();
         });
     }
