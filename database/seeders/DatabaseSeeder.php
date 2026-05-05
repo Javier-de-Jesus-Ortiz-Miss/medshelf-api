@@ -2,8 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Core\Shared\Domain\Utils;
-use App\Models\User;
+use Database\Seeders\Auth\UserSeeder;
+use Database\Seeders\Consumption\ConsumptionSeeder;
+use Database\Seeders\House\HouseSeeder;
+use Database\Seeders\Item\ItemSeeder;
+use Database\Seeders\Place\PlaceSeeder;
+use Database\Seeders\Product\ProductSeeder;
+use Database\Seeders\Storage\StorageSeeder;
+use Database\Seeders\Tests\UserHouseTestSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -16,13 +22,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'public_id' => Utils::generateUUIDV4(),
-            'name' => 'Admin',
-            'email' => 'test@example.com',
-            'password' => '12345',
+        $this->call([
+            UserSeeder::class,
+            HouseSeeder::class,
+            PlaceSeeder::class,
+            StorageSeeder::class,
+            ProductSeeder::class,
+            ItemSeeder::class,
+            ConsumptionSeeder::class,
+            UserHouseTestSeeder::class,
         ]);
     }
 }

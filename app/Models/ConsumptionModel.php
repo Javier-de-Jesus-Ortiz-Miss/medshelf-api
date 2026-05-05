@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Database\Factories\ConsumptionModelFactory;
 use Eloquent;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -15,14 +17,19 @@ use Illuminate\Support\Carbon;
  * @property string $public_id
  * @property int $item_id
  * @property int $amount
+ * @property Carbon $consumed_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property-read \App\Models\ItemModel $item
+ * @property Carbon|null $deleted_at
+ * @property-read ItemModel $item
+ * @method static ConsumptionModelFactory factory($count = null, $state = [])
  * @method static Builder<static>|ConsumptionModel newModelQuery()
  * @method static Builder<static>|ConsumptionModel newQuery()
  * @method static Builder<static>|ConsumptionModel query()
  * @method static Builder<static>|ConsumptionModel whereAmount($value)
+ * @method static Builder<static>|ConsumptionModel whereConsumedAt($value)
  * @method static Builder<static>|ConsumptionModel whereCreatedAt($value)
+ * @method static Builder<static>|ConsumptionModel whereDeletedAt($value)
  * @method static Builder<static>|ConsumptionModel whereId($value)
  * @method static Builder<static>|ConsumptionModel whereItemId($value)
  * @method static Builder<static>|ConsumptionModel wherePublicId($value)
@@ -33,6 +40,9 @@ use Illuminate\Support\Carbon;
 #[Fillable(['public_id', 'item_id', 'amount', 'consumed_at'])]
 class ConsumptionModel extends Model
 {
+    /** @uses HasFactory<ConsumptionModelFactory> */
+    use HasFactory;
+
     public function item(): BelongsTo
     {
         return $this->belongsTo(ItemModel::class, 'item_id');
@@ -41,8 +51,11 @@ class ConsumptionModel extends Model
     protected function casts(): array
     {
         return [
-            'amount' => 'integer',
+            'amount' => 'float',
             'consumed_at' => 'datetime',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 }

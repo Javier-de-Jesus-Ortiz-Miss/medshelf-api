@@ -7,9 +7,9 @@ use App\Core\Shared\Domain\CursorResponse;
 use App\Core\Shared\Domain\OffsetRequest;
 use App\Core\Shared\Domain\OffsetResponse;
 use App\Core\Shared\Domain\PaginableByCursor;
+use App\Http\Requests\ListRequest;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\Cursor;
 
 final class PaginationService
@@ -20,32 +20,36 @@ final class PaginationService
 
     // :V
     public static function paginate(
-        Request   $request,
-        callable  $dataFetcherByCursor,
-        callable  $dataFetcherByOffset,
-        ?callable $itemFormatter = null
+        ListRequest $request,
+        callable    $dataFetcherByCursor,
+        callable    $dataFetcherByOffset,
+        ?callable   $itemFormatter = null
     ): JsonResponse
     {
-        $page = $request->query('page', 0);
-        $size = $request->query('size', 10);
-        $cursor = $request->query('cursor');
-
-        if ($cursor && $page) {
-            return response()->json(['message' => 'Cannot use both cursor and offset for pagination.'], 400);
-        }
-
-        if ($cursor) {
-            $cursorRequest = new CursorRequest($cursor, $size);
+        if ($request->has('cursor') || !($request->has('page') && $request->has('size'))) {
+            $cursorRequest = new CursorRequest(
+                cursor: $request->string('cursor')->toString() ?: null,
+                size: $request->integer('size', 10)
+            );
             $result = $dataFetcherByCursor($cursorRequest);
             if (!$result instanceof CursorResponse) {
                 return response()->json(['message' => 'Invalid response from cursor data fetcher.'], 500);
             }
+            $items = $result->items;
+            if ($itemFormatter) {
+                $items = array_map($itemFormatter, $items);
+            }
             return response()->json([
-                'items' => $result->items,
+                'items' => $items,
                 'nextCursor' => $result->nextCursor,
             ]);
         } else {
-            $offsetRequest = new OffsetRequest($page, $size);
+            $page = $request->integer('page', 1);
+            $size = $request->integer('size', 10);
+            $offsetRequest = new OffsetRequest(
+                page: $page,
+                size: $size,
+            );
             $result = $dataFetcherByOffset($offsetRequest);
             if (!$result instanceof OffsetResponse) {
                 return response()->json(['message' => 'Invalid response from offset data fetcher.'], 500);
@@ -57,9 +61,9 @@ final class PaginationService
             return response()->json([
                 'items' => $items,
                 'totalCount' => $result->totalCount,
-                'page' => $size,
-                'size' => $page,
-                'hasNextPage' => $result->hasNextPage,
+                'page' => $page,
+                'size' => $size,
+                'hasMorePages' => $result->hasMorePages,
             ]);
         }
     }
@@ -73,8 +77,9 @@ final class PaginationService
     {
         $result = $query->cursorPaginate(perPage: $size, cursor: $cursor);
 
+        $data = $result->items();
         /** @var PaginableByCursor[] $items */
-        $items = collect($result->items())
+        $items = collect($data)
             ->map(fn($item) => $mapper($item))
             ->toArray();
 

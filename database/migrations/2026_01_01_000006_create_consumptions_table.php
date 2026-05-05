@@ -15,6 +15,8 @@ return new class extends Migration {
                 ->cascadeOnDelete();
             $table->integer('amount');
             $table->date('consumed_at');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -10,12 +10,13 @@ return new class extends Migration {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id')->unique();
+            $table->string('presentation');
             $table->string('name');
-            $table->text('description')->nullable();
-            $table->string('presentation_type');
-            $table->float('concentration_value');
-            $table->string('concentration_unit');
+            $table->string('consume_type');
+            $table->float('sales_unit_value');
+            $table->string('sales_unit');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

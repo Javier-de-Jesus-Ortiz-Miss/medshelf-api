@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Core\Item\Application\Dto\Request\AddMedicalItemRequest;
-use App\Core\Item\Application\Dto\Response\MedicalItemResponse;
-use App\Core\Item\Application\Dto\Response\MedicalItemViewResponse;
-use App\Core\Item\Application\Port\MedicalItemReadRepository;
-use App\Core\Item\Application\UseCase\AddMedicalItem;
-use App\Core\Item\Application\UseCase\DeleteMedicalItem;
+use App\Core\Home\Item\Application\Dto\Request\AddItemRequest;
+use App\Core\Home\Item\Application\Dto\Request\RemoveItemRequest;
+use App\Core\Home\Item\Application\Dto\Response\ItemResponse;
+use App\Core\Home\Item\Application\UseCase\AddItem;
+use App\Core\Home\Item\Application\UseCase\RemoveItem;
 use App\Core\Shared\Domain\CursorRequest;
 use App\Core\Shared\Domain\OffsetRequest;
+use App\Http\Requests\ListRequest;
+use App\Providers\Core\Home\Item\Detail\ItemDetail;
+use App\Providers\Core\Home\Item\Service\ItemFinder;
 use App\Services\PaginationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,95 +19,79 @@ use Illuminate\Http\Request;
 class ItemController extends Controller
 {
     public function __construct(
-        protected AddMedicalItem            $addMedicalItem,
-        protected MedicalItemReadRepository $medicalItemReadRepository,
-        protected DeleteMedicalItem         $deleteMedicalItem
+        protected ItemFinder $finder,
+        protected AddItem    $addItem,
+        protected RemoveItem $removeItem
     )
     {
     }
 
-    public function index(Request $request, string $placeId): JsonResponse
+    public function index(ListRequest $request, string $placeId): JsonResponse
     {
         return PaginationService::paginate(
             $request,
-            fn(CursorRequest $cursorRequest) => $this->medicalItemReadRepository->listByPlaceIdByCursor($placeId, $cursorRequest),
-            fn(OffsetRequest $offsetRequest) => $this->medicalItemReadRepository->listByPlaceIdByOffset($placeId, $offsetRequest),
-            fn(MedicalItemViewResponse $response) => $this->buildView($response)
+            fn(CursorRequest $cursorRequest) => $this->finder->listByPlaceIdByCursor($placeId, $cursorRequest),
+            fn(OffsetRequest $offsetRequest) => $this->finder->listByPlaceIdByOffset($placeId, $offsetRequest),
         );
     }
 
-    private function buildView(MedicalItemViewResponse $response): array
-    {
-        return [
-            'id' => $response->id,
-            'product' => [
-                'id' => $response->medicalProduct->id,
-                'name' => $response->medicalProduct->name,
-                'description' => $response->medicalProduct->description,
-                'presentationType' => $response->medicalProduct->presentationType,
-                'concentration' => [
-                    'value' => $response->medicalProduct->concentrationValue,
-                    'unit' => $response->medicalProduct->concentrationUnit,
-                ]
-            ],
-            'place' => [
-                'id' => $response->place->id,
-                'houseId' => $response->place->houseId,
-                'name' => $response->place->name,
-            ],
-            'totalQuantity' => $response->totalQuantity,
-            'availableQuantity' => $response->availableQuantity,
-            'expirationDate' => $response->expirationDate->toDateString(),
-            'addedDate' => $response->addedDate->toDateString(),
-        ];
-    }
-
+    //TODO: FIX
     public function store(Request $request, string $placeId): JsonResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required',
-            'product_id' => 'required|uuid',
-            'expiration_date' => 'required|date',
+        $houseId = $request->header('X-House-Id');
+        $data = $request->validate([
+            'productId' => 'required|uuid',
+            'expirationDate' => 'required|date',
         ]);
-        $data = new AddMedicalItemRequest(
-            $placeId,
-            $validatedData['name'],
-            $validatedData['product_id'],
-            $validatedData['expiration_date']
+        $result = $this->addItem->execute(
+            new AddItemRequest(
+                $data['productId'],
+                $placeId,
+                $data['expirationDate'],
+                $houseId
+            )
         );
-        $result = $this->addMedicalItem->execute($data);
         return $this->buildResponse($result);
     }
 
-    private function buildResponse(MedicalItemViewResponse|MedicalItemResponse $result): JsonResponse
+    private function buildResponse(ItemDetail|ItemResponse $result): JsonResponse
     {
-        if ($result instanceof MedicalItemViewResponse) {
-            return response()->json($this->buildView($result));
+        if ($result instanceof ItemDetail) {
+            return response()->json($result);
         } else {
             return response()->json([
                 'id' => $result->id,
-                'productId' => $result->medicalProductId,
-                'placeId' => $result->placeId,
-                'totalQuantity' => $result->totalQuantity,
-                'availableQuantity' => $result->availableQuantity,
+                'product' => [
+                    'id' => $result->productId,
+                ],
+                'place' => [
+                    'id' => $result->placeId,
+                ],
+                'totalContent' => $result->totalContent,
                 'expirationDate' => $result->expirationDate->toDateString(),
-                'addedDate' => $result->addedDate->toDateString(),
+                'createdAt' => $result->createdAt->toDateString(),
             ], 201);
         }
     }
 
     public function show(string $itemId): JsonResponse
     {
-        $item = $this->medicalItemReadRepository->findById($itemId);
+        $item = $this->finder->findById($itemId);
         if (!$item) {
             return response()->json(['message' => 'Item not found'], 404);
         }
         return $this->buildResponse($item);
     }
 
-    public function destroy(string $itemId): JsonResponse
+    public function destroy(Request $request, string $itemId): JsonResponse
     {
-        $this->deleteMedicalItem->execute($itemId);
+        $houseId = $request->header('X-House-Id');
+        $this->removeItem->execute(
+            new RemoveItemRequest(
+                $itemId,
+                $houseId
+            )
+        );
         return response()->json(null, 204);
     }
 }

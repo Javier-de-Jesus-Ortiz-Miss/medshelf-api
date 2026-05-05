@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->integer('total_quantity');
             $table->timestamp('expiration_date');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

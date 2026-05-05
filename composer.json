@@ -10,7 +10,9 @@
         "ext-pdo": "*",
         "laravel/framework": "^13.0",
         "laravel/octane": "^2.17",
-        "laravel/tinker": "^3.0"
+        "laravel/sanctum": "^4.3",
+        "laravel/tinker": "^3.0",
+        "ramsey/collection": "^2.1"
     },
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",

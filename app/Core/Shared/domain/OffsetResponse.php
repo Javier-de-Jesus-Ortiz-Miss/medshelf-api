@@ -8,7 +8,7 @@ readonly class OffsetResponse
         public int   $totalCount,
         public int   $page,
         public int   $size,
-        public bool  $hasNextPage,
+        public bool  $hasMorePages,
         public array $items = []
     )
     {
