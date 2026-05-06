@@ -18,37 +18,45 @@ final class ProductCreator
     public static function create(
         string             $name,
         ?NetContent        $netContent,
-        ?int               $quantity,
+        ?int               $totalQuantity,
         PharmaceuticalForm $pharmaceuticalForm,
         Composition        $composition,
     ): Product
     {
-        if ($pharmaceuticalForm->consumptionType === ConsumptionType::UNITARY) {
+        if ($pharmaceuticalForm->consumptionType === ConsumptionType::DISCRETE) {
             if ($netContent) {
-                throw ProductException::netContentNotAllowedForUnitaryProducts();
+                throw ProductException::netContentNotAllowedForDiscreteProducts();
             }
-            if ($quantity === null) {
-                throw ProductException::quantityRequiredForUnitaryProducts();
+            if ($totalQuantity === null) {
+                throw ProductException::quantityRequiredForDiscreteProducts();
             }
         }
 
-        if ($pharmaceuticalForm->consumptionType === ConsumptionType::DOSE) {
-            if ($quantity !== null) {
-                throw ProductException::quantityNotAllowedForDoseProducts();
+        if ($pharmaceuticalForm->consumptionType === ConsumptionType::CONTINUOUS
+            || $pharmaceuticalForm->consumptionType === ConsumptionType::APPLICABLE) {
+            if ($totalQuantity !== null) {
+                throw ProductException::quantityNotAllowedForContinuousOrApplicableProducts();
             }
             if (!$netContent) {
-                throw ProductException::netContentRequiredForDoseProducts();
+                throw ProductException::netContentRequiredForContinuousOrApplicableProducts();
             }
         }
 
-        if ($netContent && $netContent->value < $composition->referenceAmount) {
-            throw ProductException::netContentLessThanCompositionReferenceAmount();
-        }
+//        if ($netContent && $netContent->value < $composition->referenceAmount) {
+//            throw ProductException::netContentLessThanCompositionReferenceAmount();
+//        }
+
+//        if (count($composition->activeIngredients) === 1) {
+//            $activeIngredient = $composition->activeIngredients[0];
+//            if ($composition->referenceAmount !== $activeIngredient->strength->value) {
+//                throw ProductException::compositionReferenceAmountMustEqualActiveIngredientStrengthForSingleIngredientProducts();
+//            }
+//        }
 
         return Product::create(
             name: $name,
             netContent: $netContent,
-            quantity: $quantity,
+            totalQuantity: $totalQuantity,
             pharmaceuticalForm: $pharmaceuticalForm,
             composition: $composition,
         );

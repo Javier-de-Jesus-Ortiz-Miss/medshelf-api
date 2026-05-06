@@ -6,5 +6,5 @@ use App\Core\Home\Item\Model\Product;
 
 interface ProductRepository
 {
-    public function findById(int $id): ?Product;
+    public function findById(string $id): ?Product;
 }

@@ -8,13 +8,14 @@ return new class extends Migration {
     {
         Schema::create('product_compounds', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('active_compound_id')
-                ->constrained('active_compounds');
+            $table->foreignId('active_ingredient_id')
+                ->constrained('active_ingredients')
+                ->cascadeOnDelete();
             $table->foreignId('product_id')
-                ->constrained('products');
-            $table->float('concentration_value');
-            $table->string('concentration_unit');
-            $table->float('base_amount');
+                ->constrained('products')
+                ->cascadeOnDelete();
+            $table->float('strength_value');
+            $table->string('strength_unit');
             $table->timestamps();
             $table->softDeletes();
         });

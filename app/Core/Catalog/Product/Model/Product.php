@@ -25,7 +25,7 @@ final class Product
     public static function create(
         string             $name,
         ?NetContent        $netContent,
-        ?int               $quantity,
+        ?int               $totalQuantity,
         PharmaceuticalForm $pharmaceuticalForm,
         Composition        $composition,
     ): Product
@@ -34,7 +34,7 @@ final class Product
             id: Utils::generateUUIDV4(),
             name: $name,
             netContent: $netContent,
-            totalQuantity: $quantity,
+            totalQuantity: $totalQuantity,
             pharmaceuticalForm: $pharmaceuticalForm,
             createdAt: Carbon::now(),
             composition: $composition
@@ -62,7 +62,7 @@ final class Product
         );
     }
 
-    public function getTotalQuantity(): ?float
+    public function getTotalQuantity(): ?int
     {
         return $this->totalQuantity;
     }

@@ -6,7 +6,7 @@ readonly class ConsumeItemRequest
 {
     public function __construct(
         public string $itemId,
-        public int    $amount,
+        public float  $amount,
         public string $houseId,
     )
     {

@@ -25,8 +25,10 @@ class ConsumptionRepositoryAdapter implements ConsumptionRepository
         );
     }
 
-    public function countConsumesByItemId(string $itemId): int
+    public function amountOfConsumesByItemId(string $itemId): float
     {
-        return ConsumptionModel::whereHas('item', fn($q) => $q->where('public_id', $itemId))->count();
+        $itemInternalId = ItemModel::where('public_id', $itemId)->value('id')
+            ?? throw new InfrastructureException(sprintf('Item with id %s not found', $itemId));
+        return ConsumptionModel::where('item_id', $itemInternalId)->sum('amount');
     }
 }

@@ -9,7 +9,7 @@ readonly class ConsumptionResponse
     public function __construct(
         public string $id,
         public string $itemId,
-        public int    $amount,
+        public float  $amount,
         public Carbon $consumedAt,
     )
     {

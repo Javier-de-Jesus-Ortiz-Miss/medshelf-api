@@ -3,6 +3,7 @@
 namespace App\Core\Catalog\Product\Model\Repository;
 
 use App\Core\Catalog\Product\Model\Product;
+use App\Core\Catalog\Product\Model\ValueObject\PharmaceuticalForm;
 
 interface ProductRepository
 {
@@ -13,4 +14,6 @@ interface ProductRepository
     public function remove(Product $product): void;
 
     public function existsActiveIngredient(string $name): bool;
+
+    public function findPharmaceuticalFormByName(string $name): ?PharmaceuticalForm;
 }

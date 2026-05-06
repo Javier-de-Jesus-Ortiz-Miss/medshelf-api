@@ -17,13 +17,18 @@ class ConsumptionException extends DomainException
         return new self("Product not found with id $productId");
     }
 
-    public static function invalidAmountForUnitaryConsumptionType(string $itemId): self
+    public static function invalidAmountForDiscreteConsumptionType(string $itemId): self
     {
-        return new self("Invalid amount for unitary consumption type for item with id $itemId");
+        return new self("Invalid amount for discrete consumption type for item with id $itemId");
     }
 
-    public static function consumptionExceedsTotalQuantity(string $itemId): self
+    public static function consumptionExceedsAvailableContent(string $itemId): self
     {
-        return new self("Consumption exceeds total quantity for item with id $itemId");
+        return new self("Consumption exceeds available content for item with id $itemId");
+    }
+
+    public static function invalidAmount(): self
+    {
+        return new self("Invalid amount for consumption");
     }
 }

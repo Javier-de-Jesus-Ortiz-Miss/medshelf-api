@@ -26,7 +26,7 @@ final class ProductMapper
             id: $product->getId(),
             name: $product->getName(),
             netContent: self::mapNetContent($product->getNetContent()),
-            quantity: $product->getTotalQuantity(),
+            totalQuantity: $product->getTotalQuantity(),
             pharmaceuticalForm: self::mapPharmaceuticalForm($product->getPharmaceuticalForm()),
             composition: self::mapComposition($product->getComposition()),
             createdAt: $product->getCreatedAt(),
@@ -60,7 +60,7 @@ final class ProductMapper
                     name: $ingredient->name,
                     strength: new StrengthResponse(
                         value: $ingredient->strength->value,
-                        unit: $ingredient->unit->symbol(),
+                        unit: $ingredient->strength->unit->symbol(),
                     ),
                 ),
                 $composition->activeIngredients

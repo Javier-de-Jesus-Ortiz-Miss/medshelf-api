@@ -22,10 +22,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read User $owner
- * @property-read Collection<int, PlaceModel> $places
+ * @property-read \App\Models\User $owner
+ * @property-read Collection<int, \App\Models\PlaceModel> $places
  * @property-read int|null $places_count
- * @method static HouseModelFactory factory($count = null, $state = [])
+ * @method static \Database\Factories\HouseModelFactory factory($count = null, $state = [])
  * @method static Builder<static>|HouseModel newModelQuery()
  * @method static Builder<static>|HouseModel newQuery()
  * @method static Builder<static>|HouseModel query()

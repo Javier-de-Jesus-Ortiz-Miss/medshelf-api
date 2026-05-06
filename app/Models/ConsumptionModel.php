@@ -16,13 +16,13 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property string $public_id
  * @property int $item_id
- * @property int $amount
+ * @property float $amount
  * @property Carbon $consumed_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read ItemModel $item
- * @method static ConsumptionModelFactory factory($count = null, $state = [])
+ * @property-read \App\Models\ItemModel $item
+ * @method static \Database\Factories\ConsumptionModelFactory factory($count = null, $state = [])
  * @method static Builder<static>|ConsumptionModel newModelQuery()
  * @method static Builder<static>|ConsumptionModel newQuery()
  * @method static Builder<static>|ConsumptionModel query()

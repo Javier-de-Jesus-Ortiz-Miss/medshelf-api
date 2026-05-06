@@ -23,7 +23,10 @@ class ProductFinder
 
     function findById(string $id): ?ProductDetail
     {
-        $record = ProductModel::with(['activeCompounds.activeCompound'])
+        $record = ProductModel::with([
+            'activeCompounds.activeIngredient',
+            'pharmaceuticalForm',
+        ])
             ->where('public_id', $id)
             ->first();
 
@@ -41,8 +44,8 @@ class ProductFinder
                 : null,
             totalQuantity: $record->total_quantity,
             pharmaceuticalForm: new PharmaceuticalForm(
-                name: $record->pharmaceutical_form_name,
-                consumptionType: $record->pharmaceutical_form_consumption_type,
+                name: $record->pharmaceuticalForm->name,
+                consumptionType: $record->pharmaceuticalForm->consumption_type,
             ),
             createdAt: $record->created_at,
             composition: new Composition(
@@ -50,7 +53,7 @@ class ProductFinder
                 activeIngredients: $record->activeCompounds
                     ->map(
                         fn(ProductCompoundModel $compound) => new ActiveIngredient(
-                            name: $compound->activeCompound->name,
+                            name: $compound->activeIngredient->name,
                             strength: new Strength(
                                 value: $compound->strength_value,
                                 unit: $compound->strength_unit,
@@ -63,7 +66,8 @@ class ProductFinder
 
     function listByOffset(OffsetRequest $request): OffsetResponse
     {
-        $result = ProductModel::orderBy('id')
+        $result = ProductModel::with(['pharmaceuticalForm'])
+            ->orderBy('id')
             ->paginate(perPage: $request->size, page: $request->page);
 
         return new OffsetResponse(
@@ -87,8 +91,8 @@ class ProductFinder
                 : null,
             totalQuantity: $record->total_quantity,
             pharmaceuticalForm: new PharmaceuticalForm(
-                name: $record->pharmaceutical_form_name,
-                consumptionType: $record->pharmaceutical_form_consumption_type,
+                name: $record->pharmaceuticalForm->name,
+                consumptionType: $record->pharmaceuticalForm->consumption_type,
             )
         );
     }
@@ -100,7 +104,8 @@ class ProductFinder
             : null;
 
         return PaginationService::buildCursorQuery(
-            query: ProductModel::orderBy('id'),
+            query: ProductModel::with(['pharmaceuticalForm'])
+                ->orderBy('id'),
             cursor: $id ? new Cursor(['id' => $id]) : null,
             size: $request->size,
             mapper: fn($item) => $this->toView($item)

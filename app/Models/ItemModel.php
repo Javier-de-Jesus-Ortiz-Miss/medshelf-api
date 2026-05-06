@@ -19,16 +19,16 @@ use Illuminate\Support\Carbon;
  * @property string $public_id
  * @property int $product_id
  * @property int $storage_id
- * @property int $total_quantity
+ * @property float $total_content
  * @property Carbon $expiration_date
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read Collection<int, ConsumptionModel> $consumptions
+ * @property-read Collection<int, \App\Models\ConsumptionModel> $consumptions
  * @property-read int|null $consumptions_count
- * @property-read ProductModel $product
- * @property-read StorageModel $storage
- * @method static ItemModelFactory factory($count = null, $state = [])
+ * @property-read \App\Models\ProductModel $product
+ * @property-read \App\Models\StorageModel $storage
+ * @method static \Database\Factories\ItemModelFactory factory($count = null, $state = [])
  * @method static Builder<static>|ItemModel newModelQuery()
  * @method static Builder<static>|ItemModel newQuery()
  * @method static Builder<static>|ItemModel query()
@@ -39,7 +39,7 @@ use Illuminate\Support\Carbon;
  * @method static Builder<static>|ItemModel whereProductId($value)
  * @method static Builder<static>|ItemModel wherePublicId($value)
  * @method static Builder<static>|ItemModel whereStorageId($value)
- * @method static Builder<static>|ItemModel whereTotalQuantity($value)
+ * @method static Builder<static>|ItemModel whereTotalContent($value)
  * @method static Builder<static>|ItemModel whereUpdatedAt($value)
  * @mixin Eloquent
  */

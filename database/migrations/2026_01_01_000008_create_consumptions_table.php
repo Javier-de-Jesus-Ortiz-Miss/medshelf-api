@@ -2,14 +2,19 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('active_compounds', function (Blueprint $table) {
+        Schema::create('consumptions', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id')->unique();
-            $table->string('name');
+            $table->foreignId('item_id')
+                ->constrained('items')
+                ->cascadeOnDelete();
+            $table->float('amount');
+            $table->date('consumed_at');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -17,6 +22,6 @@ return new class extends Migration {
 
     public function down(): void
     {
-        Schema::dropIfExists('active_compounds');
+        Schema::dropIfExists('consumptions');
     }
 };

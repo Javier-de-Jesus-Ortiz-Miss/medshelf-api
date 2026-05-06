@@ -8,5 +8,5 @@ interface ConsumptionRepository
 {
     public function consume(Consumption $consumption): void;
 
-    public function countConsumesByItemId(string $itemId): int;
+    public function amountOfConsumesByItemId(string $itemId): float;
 }

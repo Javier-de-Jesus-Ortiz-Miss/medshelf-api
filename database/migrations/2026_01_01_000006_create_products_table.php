@@ -10,11 +10,14 @@ return new class extends Migration {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->uuid('public_id')->unique();
-            $table->string('presentation');
             $table->string('name');
-            $table->string('consume_type');
-            $table->float('sales_unit_value');
-            $table->string('sales_unit');
+            $table->float('net_content_value')->nullable();
+            $table->string('net_content_unit')->nullable();
+            $table->integer('total_quantity')->nullable();
+            $table->foreignId('pharmaceutical_form_id')
+                ->constrained('pharmaceutical_forms')
+                ->cascadeOnDelete();
+            $table->string('composition_reference_amount');
             $table->timestamps();
             $table->softDeletes();
         });

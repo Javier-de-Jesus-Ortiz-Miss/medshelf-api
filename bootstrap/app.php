@@ -1,9 +1,13 @@
 <?php
 
-use Illuminate\Auth\AuthenticationException;
+use App\Core\Shared\Application\AppException;
+use App\Core\Shared\Domain\DomainException;
+use App\Providers\Core\InfrastructureException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,13 +20,34 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectGuestsTo(null);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->shouldRenderJsonWhen(
-            fn($request) => $request->is('api/*')
-        );
-        $exceptions->render(function (AuthenticationException $e, $request) {
-            if ($request->is('api/*')) {
-                return response()->json(['message' => 'Unauthenticated'], 401);
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if ($e instanceof DomainException) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                    'timestamp' => now()->toIso8601String(),
+                ], 400);
+            } else if ($e instanceof AppException) {
+                return response()->json([
+                    'message' => $e->getMessage(),
+                    'timestamp' => now()->toIso8601String(),
+                ], 409);
+            } else if ($e instanceof InfrastructureException) {
+                return response()->json([
+                    'message' => 'An unexpected error has occurred',
+                    'details' => $e->getMessage(),
+                    'timestamp' => now()->toIso8601String(),
+                ], 500);
+            } else if ($e instanceof ValidationException) {
+                return response()->json([
+                    'message' => 'Validation failed',
+                    'errors' => $e->errors(),
+                    'timestamp' => now()->toIso8601String(),
+                ], 422);
+            } else {
+                return response()->json([
+                    'message' => 'An unexpected error occurred',
+                    'timestamp' => now()->toIso8601String(),
+                ], 500);
             }
-            return response()->json(['message' => 'An exception has occurred'], 500);
         });
     })->create();

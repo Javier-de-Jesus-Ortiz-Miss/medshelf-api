@@ -35,8 +35,8 @@ final readonly class AddItem
         $product = $this->productExternalRepository->findById($request->productId) ??
             throw new ProductNotFound($request->productId);
         $totalContent = match ($product->consumptionType) {
-            ConsumptionType::UNITARY => $product->totalQuantity,
-            ConsumptionType::DOSE => $product->contentValue,
+            ConsumptionType::DISCRETE => $product->totalQuantity,
+            ConsumptionType::CONTINUOUS, ConsumptionType::APPLICABLE => $product->contentValue,
         };
         $item = Item::create(
             productId: $request->productId,

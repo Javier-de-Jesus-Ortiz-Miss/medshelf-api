@@ -8,7 +8,7 @@ readonly class ItemConsumed extends DomainEvent
 {
     public function __construct(
         public string $itemId,
-        public int    $amount
+        public float  $amount
     )
     {
         parent::__construct();

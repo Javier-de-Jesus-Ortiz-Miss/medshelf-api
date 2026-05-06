@@ -16,13 +16,13 @@ final class Consumption
     private function __construct(
         protected string $id,
         protected string $itemId,
-        protected int    $amount,
+        protected float  $amount,
         protected Carbon $consumedAt
     )
     {
     }
 
-    public static function create(string $itemId, int $amount): Consumption
+    public static function create(string $itemId, float $amount): Consumption
     {
         $consumption = new self(
             Utils::generateUUIDV4(),
@@ -44,7 +44,7 @@ final class Consumption
         $this->events[] = $event;
     }
 
-    public static function load(string $id, string $itemId, int $amount, Carbon $consumedAt): Consumption
+    public static function load(string $id, string $itemId, float $amount, Carbon $consumedAt): Consumption
     {
         return new self(
             $id,
@@ -64,7 +64,7 @@ final class Consumption
         return $this->itemId;
     }
 
-    public function getAmount(): int
+    public function getAmount(): float
     {
         return $this->amount;
     }

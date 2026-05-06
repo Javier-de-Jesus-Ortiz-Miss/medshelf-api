@@ -52,8 +52,8 @@ class ItemFinder
                     : null,
                 totalQuantity: $product->total_quantity,
                 pharmaceuticalForm: new PharmaceuticalForm(
-                    name: $product->pharmaceutical_form_name,
-                    consumptionType: $product->pharmaceutical_form_consumption_type,
+                    name: $product->pharmaceuticalForm->name,
+                    consumptionType: $product->pharmaceuticalForm->consumption_type,
                 ),
             ),
             place: new PlaceResume(

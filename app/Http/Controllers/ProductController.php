@@ -6,7 +6,6 @@ use App\Core\Catalog\Product\Application\Dto\Request\ActiveIngredientRequest;
 use App\Core\Catalog\Product\Application\Dto\Request\AddProductRequest;
 use App\Core\Catalog\Product\Application\Dto\Request\CompositionRequest;
 use App\Core\Catalog\Product\Application\Dto\Request\NetContentRequest;
-use App\Core\Catalog\Product\Application\Dto\Request\PharmaceuticalFormRequest;
 use App\Core\Catalog\Product\Application\Dto\Request\StrengthRequest;
 use App\Core\Catalog\Product\Application\Dto\Response\ProductResponse;
 use App\Core\Catalog\Product\Application\UseCase\AddProduct;
@@ -43,21 +42,19 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
 
             'netContent' => 'nullable|array',
-            'netContent.value' => 'required_with:netContent|numeric|min:1',
+            'netContent.value' => 'required_with:netContent|numeric|min:0',
             'netContent.unit' => 'required_with:netContent|string',
 
-            'totalQuantity' => 'nullable|numeric|min:1',
+            'totalQuantity' => 'nullable|numeric|min:0',
 
-            'pharmaceuticalForm' => 'required|array',
-            'pharmaceuticalForm.name' => 'required|string|max:255',
-            'pharmaceuticalForm.consumptionType' => 'required|string|in:unitary,dose',
+            'pharmaceuticalForm' => 'required|string|max:255',
 
             'composition' => 'required|array',
-            'composition.referenceAmount' => 'required|numeric|min:1',
-            'composition.activeIngredients' => 'required|array|min:1',
+            'composition.referenceAmount' => 'required|numeric|min:0',
+            'composition.activeIngredients' => 'required|array|min:0',
             'composition.activeIngredients.*.name' => 'required|string|max:255',
             'composition.activeIngredients.*.strength' => 'required|array',
-            'composition.activeIngredients.*.strength.value' => 'required|numeric|min:1',
+            'composition.activeIngredients.*.strength.value' => 'required|numeric|min:0',
             'composition.activeIngredients.*.strength.unit' => 'required|string',
         ]);
         $result = $this->addProduct->execute(
@@ -68,10 +65,7 @@ class ProductController extends Controller
                     unit: $data['netContent']['unit']
                 ) : null,
                 totalQuantity: $data['totalQuantity'] ?? null,
-                pharmaceuticalForm: new PharmaceuticalFormRequest(
-                    name: $data['pharmaceuticalForm']['name'],
-                    consumptionType: $data['pharmaceuticalForm']['consumptionType']
-                ),
+                pharmaceuticalForm: $data['pharmaceuticalForm'],
                 composition: new CompositionRequest(
                     $data['composition']['referenceAmount'],
                     array_map(fn(array $ingredient) => new ActiveIngredientRequest(
@@ -86,8 +80,6 @@ class ProductController extends Controller
         );
         return $this->buildResponse($result);
     }
-
-    //TODO: FIX
 
     private function buildResponse(ProductDetail|ProductResponse $result): JsonResponse
     {

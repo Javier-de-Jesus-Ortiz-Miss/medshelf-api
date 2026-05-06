@@ -3,13 +3,9 @@
 namespace Database\Seeders;
 
 use Database\Seeders\Auth\UserSeeder;
-use Database\Seeders\Consumption\ConsumptionSeeder;
-use Database\Seeders\House\HouseSeeder;
-use Database\Seeders\Item\ItemSeeder;
-use Database\Seeders\Place\PlaceSeeder;
+use Database\Seeders\PharmaceuticalForm\PharmaceuticalFormSeeder;
+use Database\Seeders\Product\ActiveIngredientsSeeder;
 use Database\Seeders\Product\ProductSeeder;
-use Database\Seeders\Storage\StorageSeeder;
-use Database\Seeders\Tests\UserHouseTestSeeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -24,13 +20,9 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            HouseSeeder::class,
-            PlaceSeeder::class,
-            StorageSeeder::class,
+            ActiveIngredientsSeeder::class,
+            PharmaceuticalFormSeeder::class,
             ProductSeeder::class,
-            ItemSeeder::class,
-            ConsumptionSeeder::class,
-            UserHouseTestSeeder::class,
         ]);
     }
 }

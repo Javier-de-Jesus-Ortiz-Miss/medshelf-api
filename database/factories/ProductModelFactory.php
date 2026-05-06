@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\ActiveCompoundModel;
+use App\Models\ActiveIngredientModel;
 use App\Models\ProductCompoundModel;
 use App\Models\ProductModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -34,7 +34,7 @@ class ProductModelFactory extends Factory
         return $this->afterCreating(function (ProductModel $product) {
             ProductCompoundModel::factory()->count(3)->create([
                 'product_id' => $product->id,
-                'active_compound_id' => ActiveCompoundModel::factory(),
+                'active_compound_id' => ActiveIngredientModel::factory(),
                 'concentration_value' => fake()->randomFloat(2, 0.1, 100),
                 'concentration_unit' => fake()->randomElement(['mg/ml', 'g/l', 'µg/ml']),
                 'base_amount' => fake()->randomFloat(2, 0.1, 1000),

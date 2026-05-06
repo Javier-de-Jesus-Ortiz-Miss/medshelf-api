@@ -1,0 +1,22 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+
+return new class extends Migration {
+    public function up(): void
+    {
+        Schema::create('pharmaceutical_forms', function (Blueprint $table) {
+            $table->id();
+            $table->string('name')->unique();
+            $table->string('consumption_type');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('pharmaceutical_forms');
+    }
+};

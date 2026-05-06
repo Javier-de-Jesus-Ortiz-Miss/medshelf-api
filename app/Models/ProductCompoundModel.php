@@ -14,41 +14,44 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
- * @property int $active_compound_id
+ * @property int $active_ingredient_id
  * @property int $product_id
- * @property float $concentration_value
- * @property string $concentration_unit
- * @property float $base_amount
+ * @property float $strength_value
+ * @property string $strength_unit
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
- * @property-read ActiveCompoundModel $activeCompound
- * @property-read ProductModel $product
- * @method static ProductCompoundModelFactory factory($count = null, $state = [])
+ * @property Carbon|null $deleted_at
+ * @property-read \App\Models\ActiveIngredientModel $activeIngredient
+ * @property-read \App\Models\ProductModel $product
+ * @method static \Database\Factories\ProductCompoundModelFactory factory($count = null, $state = [])
  * @method static Builder<static>|ProductCompoundModel newModelQuery()
  * @method static Builder<static>|ProductCompoundModel newQuery()
  * @method static Builder<static>|ProductCompoundModel query()
- * @method static Builder<static>|ProductCompoundModel whereActiveCompoundId($value)
- * @method static Builder<static>|ProductCompoundModel whereBaseAmount($value)
- * @method static Builder<static>|ProductCompoundModel whereConcentrationUnit($value)
- * @method static Builder<static>|ProductCompoundModel whereConcentrationValue($value)
+ * @method static Builder<static>|ProductCompoundModel whereActiveIngredientId($value)
  * @method static Builder<static>|ProductCompoundModel whereCreatedAt($value)
  * @method static Builder<static>|ProductCompoundModel whereDeletedAt($value)
  * @method static Builder<static>|ProductCompoundModel whereId($value)
  * @method static Builder<static>|ProductCompoundModel whereProductId($value)
+ * @method static Builder<static>|ProductCompoundModel whereStrengthUnit($value)
+ * @method static Builder<static>|ProductCompoundModel whereStrengthValue($value)
  * @method static Builder<static>|ProductCompoundModel whereUpdatedAt($value)
  * @mixin Eloquent
  */
 #[Table('product_compounds')]
-#[Fillable('strength_value', 'strength_unit')]
+#[Fillable([
+    'product_id',
+    'active_ingredient_id',
+    'strength_value',
+    'strength_unit',
+])]
 class ProductCompoundModel extends Model
 {
     /** @use HasFactory<ProductCompoundModelFactory> */
     use HasFactory;
 
-    public function activeCompound(): BelongsTo
+    public function activeIngredient(): BelongsTo
     {
-        return $this->belongsTo(ActiveCompoundModel::class, 'active_compound_id');
+        return $this->belongsTo(ActiveIngredientModel::class, 'active_ingredient_id');
     }
 
     public function product(): BelongsTo

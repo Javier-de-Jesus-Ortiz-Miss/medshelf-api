@@ -14,7 +14,7 @@ final readonly class ProductRepositoryAdapter implements ProductRepository
     {
     }
 
-    public function findById(int $id): ?Product
+    public function findById(string $id): ?Product
     {
         $product = $this->repository->findById($id);
         if (!$product) return null;
@@ -22,7 +22,7 @@ final readonly class ProductRepositoryAdapter implements ProductRepository
             id: $product->getId(),
             contentValue: $product->getNetContent()?->value,
             totalQuantity: $product->getTotalQuantity(),
-            consumptionType: ConsumptionType::from($product->getPharmaceuticalForm()->consumptionType->value),
+            consumptionType: ConsumptionType::fromString($product->getPharmaceuticalForm()->consumptionType->value),
         );
     }
 }

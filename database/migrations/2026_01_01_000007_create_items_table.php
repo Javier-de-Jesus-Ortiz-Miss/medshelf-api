@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->foreignId('storage_id')
                 ->constrained('storages')
                 ->cascadeOnDelete();
-            $table->integer('total_quantity');
+            $table->integer('total_content');
             $table->timestamp('expiration_date');
             $table->timestamps();
             $table->softDeletes();

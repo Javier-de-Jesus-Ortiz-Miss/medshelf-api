@@ -7,8 +7,6 @@ use Carbon\Carbon;
 
 final class Item
 {
-    private const int SOON_TO_EXPIRE_DAYS = 3;
-
     private function __construct(
         protected string $id,
         protected string $productId,
@@ -84,15 +82,5 @@ final class Item
     public function getCreatedAt(): Carbon
     {
         return $this->createdAt;
-    }
-
-    public function isExpired(): bool
-    {
-        return $this->expirationDate->isPast();
-    }
-
-    public function isSoonToExpire(): bool
-    {
-        return $this->expirationDate->diffInDays(Carbon::now()) <= self::SOON_TO_EXPIRE_DAYS;
     }
 }

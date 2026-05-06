@@ -10,7 +10,9 @@ use App\Core\Catalog\Product\Model\ValueObject\ConsumptionType;
 use App\Core\Catalog\Product\Model\ValueObject\NetContent;
 use App\Core\Catalog\Product\Model\ValueObject\PharmaceuticalForm;
 use App\Core\Catalog\Product\Model\ValueObject\Strength;
-use App\Models\ActiveCompoundModel;
+use App\Core\Shared\Domain\UnitFactory;
+use App\Models\ActiveIngredientModel;
+use App\Models\PharmaceuticalFormModel;
 use App\Models\ProductCompoundModel;
 use App\Models\ProductModel;
 use App\Providers\Core\InfrastructureException;
@@ -24,7 +26,8 @@ class ProductRepositoryAdapter implements ProductRepository
     {
         $record = ProductModel::with([
             'activeCompounds',
-            'activeCompounds.activeCompound',
+            'activeCompounds.activeIngredient',
+            'pharmaceuticalForm',
         ])
             ->where('public_id', $id)
             ->first();
@@ -41,13 +44,13 @@ class ProductRepositoryAdapter implements ProductRepository
             netContent: ($productModel->net_content_value && $productModel->net_content_unit)
                 ? new NetContent(
                     value: $productModel->net_content_value,
-                    unit: $productModel->net_content_unit,
+                    unit: UnitFactory::create($productModel->net_content_unit),
                 )
                 : null,
             totalQuantity: $productModel->total_quantity,
             pharmaceuticalForm: new PharmaceuticalForm(
-                name: $productModel->pharmaceutical_form_name,
-                consumptionType: ConsumptionType::from($productModel->pharmaceutical_form_consumption_type),
+                name: $productModel->pharmaceuticalForm->name,
+                consumptionType: ConsumptionType::fromString($productModel->pharmaceuticalForm->consumption_type),
             ),
             createdAt: $productModel->created_at,
             composition: new Composition(
@@ -55,10 +58,10 @@ class ProductRepositoryAdapter implements ProductRepository
                 activeIngredients: $activeCompounds
                     ->map(
                         fn(ProductCompoundModel $compound) => new ActiveIngredient(
-                            name: $compound->activeCompound->name,
+                            name: $compound->activeIngredient->name,
                             strength: new Strength(
                                 value: $compound->strength_value,
-                                unit: $compound->strength_unit,
+                                unit: UnitFactory::create($compound->strength_unit),
                             )
                         )
                     )->toArray(),
@@ -69,7 +72,9 @@ class ProductRepositoryAdapter implements ProductRepository
     public function save(Product $product): void
     {
         try {
-            DB::transaction(function () use ($product) {
+            $pharmaceuticalFormInternalId = PharmaceuticalFormModel::where('name', $product->getPharmaceuticalForm()->name)->value('id')
+                ?? throw new InfrastructureException("Pharmaceutical form not found: " . $product->getPharmaceuticalForm()->name);
+            DB::transaction(function () use ($product, $pharmaceuticalFormInternalId) {
                 $productSaved = ProductModel::updateOrCreate(
                     ['public_id' => $product->getId()],
                     [
@@ -77,21 +82,20 @@ class ProductRepositoryAdapter implements ProductRepository
                         'net_content_value' => $product->getNetContent()?->value,
                         'net_content_unit' => $product->getNetContent()?->unit,
                         'total_quantity' => $product->getTotalQuantity(),
-                        'pharmaceutical_form_name' => $product->getPharmaceuticalForm()->name,
-                        'pharmaceutical_form_consumption_type' => $product->getPharmaceuticalForm()->consumptionType->value,
+                        'pharmaceutical_form_id' => $pharmaceuticalFormInternalId,
                         'composition_reference_amount' => $product->getComposition()->referenceAmount
                     ]
                 );
                 $productSaved->activeCompounds()->delete();
                 foreach ($product->getComposition()->activeIngredients as $ingredient) {
-                    $compound = ActiveCompoundModel::where('name', $ingredient->name)->first();
+                    $compound = ActiveIngredientModel::where('name', $ingredient->name)->first();
 
                     if (!$compound) {
                         throw new InfrastructureException("Active compound not found: " . $ingredient->name);
                     }
 
                     $productSaved->activeCompounds()->create([
-                        'active_compound_id' => $compound->id,
+                        'active_ingredient_id' => $compound->id,
                         'strength_value' => $ingredient->strength->value,
                         'strength_unit' => $ingredient->strength->unit,
                     ]);
@@ -109,6 +113,16 @@ class ProductRepositoryAdapter implements ProductRepository
 
     public function existsActiveIngredient(string $name): bool
     {
-        return ActiveCompoundModel::where('name', $name)->exists();
+        return ActiveIngredientModel::where('name', $name)->exists();
+    }
+
+    public function findPharmaceuticalFormByName(string $name): ?PharmaceuticalForm
+    {
+        $record = PharmaceuticalFormModel::where('name', $name)->first();
+        if (!$record) return null;
+        return new PharmaceuticalForm(
+            name: $record->name,
+            consumptionType: ConsumptionType::fromString($record->consumption_type),
+        );
     }
 }

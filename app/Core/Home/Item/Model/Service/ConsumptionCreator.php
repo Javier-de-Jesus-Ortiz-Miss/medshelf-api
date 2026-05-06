@@ -19,7 +19,7 @@ final readonly class ConsumptionCreator
     {
     }
 
-    public function consume(string $itemId, string $houseId, int $amount): Consumption
+    public function consume(string $itemId, string $houseId, float $amount): Consumption
     {
         $item = $this->itemRepository->findByIdAndHouseId($itemId, $houseId) ??
             throw ConsumptionException::itemNotFound($itemId);

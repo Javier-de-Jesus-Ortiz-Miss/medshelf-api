@@ -2,7 +2,9 @@
 
 namespace App\Providers\Core\Home\Item\View;
 
-readonly class ConsumptionView
+use App\Core\Shared\Domain\PaginableByCursor;
+
+readonly class ConsumptionView implements PaginableByCursor
 {
     public function __construct(
         public string $id,
@@ -10,5 +12,10 @@ readonly class ConsumptionView
         public string $consumedAt
     )
     {
+    }
+
+    public function getCursor(): string
+    {
+        return $this->id;
     }
 }

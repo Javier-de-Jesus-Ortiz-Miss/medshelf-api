@@ -22,10 +22,10 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Carbon|null $deleted_at
- * @property-read Collection<int, ItemModel> $items
+ * @property-read Collection<int, \App\Models\ItemModel> $items
  * @property-read int|null $items_count
- * @property-read PlaceModel $place
- * @method static StorageModelFactory factory($count = null, $state = [])
+ * @property-read \App\Models\PlaceModel $place
+ * @method static \Database\Factories\StorageModelFactory factory($count = null, $state = [])
  * @method static Builder<static>|StorageModel newModelQuery()
  * @method static Builder<static>|StorageModel newQuery()
  * @method static Builder<static>|StorageModel query()

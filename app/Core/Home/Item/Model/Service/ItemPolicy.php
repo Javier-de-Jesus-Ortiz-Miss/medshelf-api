@@ -18,12 +18,15 @@ final readonly class ItemPolicy
 
     public function assertConsumption(Item $item, float $amount, Product $productResume): void
     {
-        $consumptionsCount = $this->consumptionRepository->countConsumesByItemId($item->getId());
-        if ($productResume->consumptionType == ConsumptionType::UNITARY && floor($amount) != $amount) {
-            throw ConsumptionException::invalidAmountForUnitaryConsumptionType($item->getId());
+        if ($amount <= 0) {
+            throw ConsumptionException::invalidAmount();
         }
-        if ($consumptionsCount + $amount > $item->getTotalContent()) {
-            throw ConsumptionException::consumptionExceedsTotalQuantity($item->getId());
+        $consumptionsCount = $this->consumptionRepository->amountOfConsumesByItemId($item->getId());
+        if ($productResume->consumptionType == ConsumptionType::DISCRETE && floor($amount) != $amount) {
+            throw ConsumptionException::invalidAmountForDiscreteConsumptionType($item->getId());
+        }
+        if ($item->getTotalContent() - $consumptionsCount < $amount) {
+            throw ConsumptionException::consumptionExceedsAvailableContent($item->getId());
         }
     }
 }

@@ -36,7 +36,7 @@ class ConsumptionController extends Controller
     {
         $houseId = $request->header('X-House-Id');
         $data = request()->validate([
-            'amount' => 'required|numeric|min:1',
+            'amount' => 'required|numeric|min:0',
         ]);
 
         $result = $this->consumeItem->execute(

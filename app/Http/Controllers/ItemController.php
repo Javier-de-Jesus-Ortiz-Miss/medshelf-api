@@ -13,6 +13,7 @@ use App\Http\Requests\ListRequest;
 use App\Providers\Core\Home\Item\Detail\ItemDetail;
 use App\Providers\Core\Home\Item\Service\ItemFinder;
 use App\Services\PaginationService;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -35,19 +36,18 @@ class ItemController extends Controller
         );
     }
 
-    //TODO: FIX
     public function store(Request $request, string $placeId): JsonResponse
     {
         $houseId = $request->header('X-House-Id');
         $data = $request->validate([
             'productId' => 'required|uuid',
-            'expirationDate' => 'required|date',
+            'expirationDate' => 'required|date_format:Y-m-d\TH:i:s.v\Z,Y-m-d\TH:i:s\Z',
         ]);
         $result = $this->addItem->execute(
             new AddItemRequest(
                 $data['productId'],
                 $placeId,
-                $data['expirationDate'],
+                Carbon::parse($data['expirationDate']),
                 $houseId
             )
         );
