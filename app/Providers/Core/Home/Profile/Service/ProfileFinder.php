@@ -7,10 +7,11 @@ use App\Core\Shared\Domain\CursorResponse;
 use App\Core\Shared\Domain\OffsetRequest;
 use App\Core\Shared\Domain\OffsetResponse;
 use App\Models\ProfileModel;
+use App\Models\TreatmentModel;
 use App\Providers\Core\Home\Profile\Detail\ProfileDetail;
 use App\Providers\Core\Home\Profile\View\ProfileView;
+use App\Providers\Core\InvalidCursor;
 use App\Services\PaginationService;
-use Illuminate\Pagination\Cursor;
 
 class ProfileFinder
 {
@@ -64,14 +65,17 @@ class ProfileFinder
 
     public function listByUserIdByCursor(string $userId, CursorRequest $request): CursorResponse
     {
-        $id = $request->cursor
-            ? ProfileModel::where('public_id', $request->cursor)->value('id')
-            : null;
+        $id = match ($request->cursor) {
+            null => null,
+            default => TreatmentModel::where('public_id', $userId)->value('id')
+                ?? throw new InvalidCursor('Invalid cursor provided for Treatment listing.')
+        };
 
         return PaginationService::buildCursorQuery(
             query: ProfileModel::whereHas('user', fn($q) => $q->where('public_id', $userId))
                 ->orderBy('id'),
-            cursor: $id ? new Cursor(['id' => $id]) : null,
+            cursorName: 'id',
+            cursor: $id,
             size: $request->size,
             mapper: fn($item) => $this->toView($item)
         );

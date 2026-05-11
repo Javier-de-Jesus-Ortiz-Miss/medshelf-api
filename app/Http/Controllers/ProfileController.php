@@ -6,7 +6,7 @@ use App\Core\Home\Profile\Application\Dto\Request\AddProfileRequest;
 use App\Core\Home\Profile\Application\UseCase\AddProfile;
 use App\Core\Shared\Domain\CursorRequest;
 use App\Core\Shared\Domain\OffsetRequest;
-use App\Http\Requests\ListRequest;
+use App\Http\Requests\UuidListRequest;
 use App\Providers\Core\Home\Profile\Service\ProfileFinder;
 use App\Services\PaginationService;
 use Illuminate\Http\JsonResponse;
@@ -21,7 +21,7 @@ class ProfileController extends Controller
     {
     }
 
-    public function index(ListRequest $request): JsonResponse
+    public function index(UuidListRequest $request): JsonResponse
     {
         $userId = $request->header('X-User-Id');
 
@@ -37,7 +37,7 @@ class ProfileController extends Controller
         $userId = $request->header('X-User-Id');
 
         $data = $request->validate([
-            'name'         => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'relationship' => 'nullable|string|max:255',
         ]);
 
@@ -48,11 +48,11 @@ class ProfileController extends Controller
         ));
 
         return response()->json([
-            'id'           => $result->id,
-            'userId'       => $result->userId,
-            'name'         => $result->name,
+            'id' => $result->id,
+            'userId' => $result->userId,
+            'name' => $result->name,
             'relationship' => $result->relationship,
-            'createdAt'    => $result->createdAt->toIso8601String(),
+            'createdAt' => $result->createdAt->toIso8601String(),
         ], 201);
     }
 

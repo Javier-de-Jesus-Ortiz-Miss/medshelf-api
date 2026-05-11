@@ -11,8 +11,8 @@ use App\Providers\Core\Home\Treatment\Detail\TreatmentDetail;
 use App\Providers\Core\Home\Treatment\Resume\ItemResume;
 use App\Providers\Core\Home\Treatment\Resume\ProfileResume;
 use App\Providers\Core\Home\Treatment\View\TreatmentView;
+use App\Providers\Core\InvalidCursor;
 use App\Services\PaginationService;
-use Illuminate\Pagination\Cursor;
 
 class TreatmentFinder
 {
@@ -20,7 +20,7 @@ class TreatmentFinder
     {
         $record = TreatmentModel::with([
             'profile' => fn($q) => $q->select('id', 'public_id', 'name'),
-            'item'    => fn($q) => $q->select('id', 'public_id'),
+            'item' => fn($q) => $q->select('id', 'public_id'),
         ])
             ->where('public_id', $id)
             ->first();
@@ -51,26 +51,11 @@ class TreatmentFinder
         );
     }
 
-    private function toView(TreatmentModel $record): TreatmentView
-    {
-        return new TreatmentView(
-            id: $record->public_id,
-            profileId: $record->profile->public_id,
-            itemId: $record->item->public_id,
-            status: $record->status,
-            frequencyValue: $record->frequency_value,
-            frequencyUnit: $record->frequency_unit,
-            doseQuantity: $record->dose_quantity,
-            startDate: $record->start_date->toDateString(),
-            endDate: $record->end_date?->toDateString(),
-        );
-    }
-
     public function listByProfileIdByOffset(string $profileId, OffsetRequest $request): OffsetResponse
     {
         $result = TreatmentModel::with([
             'profile' => fn($q) => $q->select('id', 'public_id', 'name'),
-            'item'    => fn($q) => $q->select('id', 'public_id'),
+            'item' => fn($q) => $q->select('id', 'public_id'),
         ])
             ->whereHas('profile', fn($q) => $q->where('public_id', $profileId))
             ->orderBy('id')
@@ -87,20 +72,38 @@ class TreatmentFinder
         );
     }
 
+    private function toView(TreatmentModel $record): TreatmentView
+    {
+        return new TreatmentView(
+            id: $record->public_id,
+            profileId: $record->profile->public_id,
+            itemId: $record->item->public_id,
+            status: $record->status,
+            frequencyValue: $record->frequency_value,
+            frequencyUnit: $record->frequency_unit,
+            doseQuantity: $record->dose_quantity,
+            startDate: $record->start_date->toDateString(),
+            endDate: $record->end_date?->toDateString(),
+        );
+    }
+
     public function listByProfileIdByCursor(string $profileId, CursorRequest $request): CursorResponse
     {
-        $id = $request->cursor
-            ? TreatmentModel::where('public_id', $request->cursor)->value('id')
-            : null;
+        $id = match ($request->cursor) {
+            null => null,
+            default => TreatmentModel::where('public_id', $request->cursor)->value('id')
+                ?? throw new InvalidCursor('Invalid cursor provided for Treatment listing.')
+        };
 
         return PaginationService::buildCursorQuery(
             query: TreatmentModel::with([
                 'profile' => fn($q) => $q->select('id', 'public_id', 'name'),
-                'item'    => fn($q) => $q->select('id', 'public_id'),
+                'item' => fn($q) => $q->select('id', 'public_id'),
             ])
                 ->whereHas('profile', fn($q) => $q->where('public_id', $profileId))
                 ->orderBy('id'),
-            cursor: $id ? new Cursor(['id' => $id]) : null,
+            cursorName: 'id',
+            cursor: $id,
             size: $request->size,
             mapper: fn($item) => $this->toView($item)
         );

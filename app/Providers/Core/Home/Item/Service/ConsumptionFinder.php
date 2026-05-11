@@ -110,14 +110,17 @@ class ConsumptionFinder
 
     public function listByTreatmentIdByCursor(string $treatmentId, CursorRequest $request): CursorResponse
     {
-        $id = $request->cursor
-            ? ConsumptionModel::where('public_id', $request->cursor)->value('id')
-            : null;
+        $id = match ($request->cursor) {
+            null => null,
+            default => ConsumptionModel::where('public_id', $request->cursor)->value('id')
+                ?? throw new InvalidCursor('Invalid cursor provided for Consumption listing.')
+        };
 
         return PaginationService::buildCursorQuery(
             query: ConsumptionModel::whereHas('treatment', fn($q) => $q->where('public_id', $treatmentId))
                 ->orderBy('id'),
-            cursor: $id ? new Cursor(['id' => $id]) : null,
+            cursorName: 'id',
+            cursor: $id,
             size: $request->size,
             mapper: fn($item) => $this->toView($item)
         );

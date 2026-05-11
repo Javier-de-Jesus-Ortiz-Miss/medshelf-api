@@ -23,11 +23,34 @@ class TreatmentControllerTest extends TestCase
 
     // ── Helpers ────────────────────────────────────────────────────────────
 
+    public function test_store_creates_treatment_and_returns_201(): void
+    {
+        $profile = $this->createProfile();
+        $item = $this->createItem();
+
+        $this->postJson('/api/treatments', [
+            'profileId' => $profile->public_id,
+            'itemId' => $item->public_id,
+            'frequencyValue' => 8,
+            'frequencyUnit' => 'hours',
+            'doseQuantity' => 1.5,
+            'startDate' => now()->toDateString(),
+        ])
+            ->assertStatus(201)
+            ->assertJsonFragment(['status' => 'active']);
+    }
+
+    private function createProfile(): ProfileModel
+    {
+        $user = User::factory()->create();
+        return ProfileModel::factory()->create(['user_id' => $user->id]);
+    }
+
     /**
      * Creates a PharmaceuticalFormModel → ProductModel → House → Place → Storage → ItemModel chain.
      * Returns the ItemModel. The house public_id can be fetched via item->storage->place->house->public_id.
      *
-     * @param  string  $consumptionType  'continuous'|'discrete'
+     * @param string $consumptionType 'continuous'|'discrete'
      */
     private function createItem(string $consumptionType = 'continuous', int $totalContent = 10): ItemModel
     {
@@ -83,48 +106,7 @@ class TreatmentControllerTest extends TestCase
         ]);
     }
 
-    private function createProfile(): ProfileModel
-    {
-        $user = User::factory()->create();
-        return ProfileModel::factory()->create(['user_id' => $user->id]);
-    }
-
-    private function createTreatment(string $status = 'active'): TreatmentModel
-    {
-        $profile = $this->createProfile();
-        $item = $this->createItem();
-
-        return TreatmentModel::create([
-            'public_id' => Str::uuid(),
-            'profile_id' => $profile->id,
-            'item_id' => $item->id,
-            'status' => $status,
-            'frequency_value' => 8,
-            'frequency_unit' => 'hours',
-            'dose_quantity' => 1.0,
-            'start_date' => now()->toDateString(),
-            'end_date' => null,
-        ]);
-    }
-
     // ── POST /api/treatments ───────────────────────────────────────────────
-
-    public function test_store_creates_treatment_and_returns_201(): void
-    {
-        $profile = $this->createProfile();
-        $item = $this->createItem();
-
-        $this->postJson('/api/treatments', [
-            'profileId' => $profile->public_id,
-            'itemId' => $item->public_id,
-            'frequencyValue' => 8,
-            'frequencyUnit' => 'hours',
-            'doseQuantity' => 1.5,
-            'startDate' => now()->toDateString(),
-        ])
-            ->assertStatus(201)
-            ->assertJsonFragment(['status' => 'active']);
-    }
 
     public function test_store_returns_404_when_profile_not_found(): void
     {
@@ -149,8 +131,6 @@ class TreatmentControllerTest extends TestCase
             ->assertStatus(422);
     }
 
-    // ── GET /api/treatments ────────────────────────────────────────────────
-
     public function test_index_returns_treatments_for_profile(): void
     {
         $treatment = $this->createTreatment();
@@ -158,6 +138,26 @@ class TreatmentControllerTest extends TestCase
         $this->getJson("/api/treatments?profile_id={$treatment->profile->public_id}")
             ->assertStatus(200)
             ->assertJsonFragment(['id' => $treatment->public_id]);
+    }
+
+    // ── GET /api/treatments ────────────────────────────────────────────────
+
+    private function createTreatment(string $status = 'active'): TreatmentModel
+    {
+        $profile = $this->createProfile();
+        $item = $this->createItem();
+
+        return TreatmentModel::create([
+            'public_id' => Str::uuid(),
+            'profile_id' => $profile->id,
+            'item_id' => $item->id,
+            'status' => $status,
+            'frequency_value' => 8,
+            'frequency_unit' => 'hours',
+            'dose_quantity' => 1.0,
+            'start_date' => now()->toDateString(),
+            'end_date' => null,
+        ]);
     }
 
     // ── GET /api/treatments/{id} ───────────────────────────────────────────
@@ -207,7 +207,7 @@ class TreatmentControllerTest extends TestCase
         $treatment = $this->createTreatment('paused');
 
         $this->postJson("/api/treatments/{$treatment->public_id}/pause")
-            ->assertStatus(422);
+            ->assertStatus(400);
     }
 
     // ── POST /api/treatments/{id}/resume ──────────────────────────────────
@@ -292,7 +292,7 @@ class TreatmentControllerTest extends TestCase
         $this->postJson("/api/treatments/{$treatment->public_id}/consumptions", [
             'amount' => 1.5,
         ], ['X-House-Id' => $house->public_id])
-            ->assertStatus(422);
+            ->assertStatus(400);
     }
 
     // ── GET /api/treatments/{id}/consumptions ─────────────────────────────

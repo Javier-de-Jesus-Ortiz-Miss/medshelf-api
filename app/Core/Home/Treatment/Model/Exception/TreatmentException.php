@@ -2,9 +2,9 @@
 
 namespace App\Core\Home\Treatment\Model\Exception;
 
-use RuntimeException;
+use App\Core\Shared\Domain\DomainException;
 
-class TreatmentException extends RuntimeException
+class TreatmentException extends DomainException
 {
     public static function cannotRegisterDose(string $treatmentId, string $status): self
     {
