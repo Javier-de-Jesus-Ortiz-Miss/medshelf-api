@@ -12,12 +12,14 @@ final readonly class Register
 {
     public function execute(RegisterRequest $request): AuthResponse
     {
-        $user = User::create([
-            'public_id' => Utils::generateUUIDV4(),
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'password' => $request->input('password'),
-        ]);
+        $user = User::updateOrCreate(
+            ['public_id' => Utils::generateUUIDV4()],
+            [
+                'name' => $request->input('name'),
+                'email' => $request->input('email'),
+                'password' => $request->input('password'),
+            ]
+        );
 
         $token = JWTAuth::fromUser($user);
 
