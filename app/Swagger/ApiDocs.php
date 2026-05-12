@@ -50,7 +50,7 @@ use OpenApi\Annotations as OA;
  *     schema="AuthResponse",
  *     type="object",
  *     required={"expiresIn","user"},
- *     @OA\Property(property="user", type="array", @OA\Items(type="object", @OA\Items(ref="#/components/schemas/ProfileResponse")))
+ *     @OA\Property(property="user", type="array", @OA\Items(type="object", @OA\Items(ref="#/components/schemas/ProfileResponse"))),
  *     @OA\Property(property="expiresIn", type="integer"),
  * )
  * @OA\Schema(
