@@ -49,11 +49,9 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="AuthResponse",
  *     type="object",
- *     required={"accessToken","refreshToken","expiresIn","user"},
- *     @OA\Property(property="accessToken", type="string"),
- *     @OA\Property(property="refreshToken", type="string"),
- *     @OA\Property(property="expiresIn", type="integer"),
+ *     required={"expiresIn","user"},
  *     @OA\Property(property="user", type="array", @OA\Items(type="object", @OA\Items(ref="#/components/schemas/ProfileResponse")))
+ *     @OA\Property(property="expiresIn", type="integer"),
  * )
  * @OA\Schema(
  *     schema="CursorPaginationResponse",
