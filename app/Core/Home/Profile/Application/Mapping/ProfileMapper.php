@@ -17,7 +17,7 @@ final class ProfileMapper
             id: $profile->getId(),
             name: $profile->getName(),
             relationship: $profile->getRelationship(),
-            createdAt: $profile->getCreatedAt(),
+            createdAt: $profile->getCreatedAt()->toIso8601String(),
         );
     }
 }

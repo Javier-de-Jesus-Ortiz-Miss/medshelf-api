@@ -21,9 +21,9 @@ final class TreatmentMapper
             frequencyValue: $treatment->getFrequencyValue(),
             frequencyUnit: $treatment->getFrequencyUnit(),
             doseQuantity: $treatment->getDoseQuantity(),
-            startDate: $treatment->getStartDate(),
-            endDate: $treatment->getEndDate(),
-            createdAt: $treatment->getCreatedAt(),
+            startDate: $treatment->getStartDate()->toDateString(),
+            endDate: $treatment->getEndDate()?->toDateString(),
+            createdAt: $treatment->getCreatedAt()->toIso8601String(),
         );
     }
 }
