@@ -133,7 +133,7 @@ class TreatmentController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"profileId","itemId","frequencyValue","frequencyUnit","doseQuantity","startDate"},
+     *             required={"itemId","dose","frequencyUnit","startDate"},
      *             @OA\Property(property="itemId", type="string", format="uuid"),
      *             @OA\Property(property="dose", type="number", minimum=0.01, example=1.5),
      *             @OA\Property(property="frequencyUnit", type="string", enum={"hours","days","weeks"}),
