@@ -8,7 +8,7 @@ use OpenApi\Annotations as OA;
  * @OA\Info(
  *     title="Medshelf API",
  *     version="1.0.0",
- *     description="Documentacion OpenAPI para los endpoints de Medshelf."
+ *     description="OpenAPI documentation for the Medshelf API."
  * )
  *
  * @OA\Server(
@@ -37,8 +37,9 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="ErrorResponse",
  *     type="object",
- *     required={"message"},
- *     @OA\Property(property="message", type="string")
+ *     required={"message","timestamp"},
+ *     @OA\Property(property="message", type="string"),
+ *     @OA\Property(property="timestamp", type="string", format="date-time")
  * )
  * @OA\Schema(
  *     schema="MessageResponse",
@@ -50,8 +51,15 @@ use OpenApi\Annotations as OA;
  *     schema="AuthResponse",
  *     type="object",
  *     required={"expiresIn","user"},
- *     @OA\Property(property="user", type="array", @OA\Items(type="object", @OA\Items(ref="#/components/schemas/ProfileResponse"))),
- *     @OA\Property(property="expiresIn", type="integer"),
+ *     @OA\Property(
+ *         property="user",
+ *         type="object",
+ *         required={"id","name","email"},
+ *         @OA\Property(property="id", type="string", format="uuid"),
+ *         @OA\Property(property="name", type="string"),
+ *         @OA\Property(property="email", type="string", format="email")
+ *     ),
+ *     @OA\Property(property="expiresIn", type="integer", description="Token lifetime in seconds")
  * )
  * @OA\Schema(
  *     schema="CursorPaginationResponse",
@@ -233,7 +241,7 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(property="place", type="object", @OA\Property(property="id", type="string", format="uuid")),
  *     @OA\Property(property="totalContent", type="number"),
  *     @OA\Property(property="expirationDate", type="string", format="date"),
- *     @OA\Property(property="createdAt", type="string", format="date")
+ *     @OA\Property(property="createdAt", type="string", format="date-time")
  * )
  * @OA\Schema(
  *     schema="ConsumptionResponse",
@@ -247,10 +255,10 @@ use OpenApi\Annotations as OA;
  * @OA\Schema(
  *     schema="ProfileResponse",
  *     type="object",
- *     required={"id", "email","name","createdAt"},
+ *     required={"id","name","createdAt"},
  *     @OA\Property(property="id", type="string", format="uuid"),
- *     @OA\Property(property="email", type="string"),
  *     @OA\Property(property="name", type="string"),
+ *     @OA\Property(property="relationship", type="string", nullable=true),
  *     @OA\Property(property="createdAt", type="string", format="date-time")
  * )
  * @OA\Schema(
