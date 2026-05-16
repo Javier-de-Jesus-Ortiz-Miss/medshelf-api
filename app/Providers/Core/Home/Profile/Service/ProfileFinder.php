@@ -32,7 +32,7 @@ class ProfileFinder
             id: $record->public_id,
             name: $record->name,
             relationship: $record->relationship,
-            createdAt: $record->created_at,
+            createdAt: $record->created_at->toIso8601String(),
         );
     }
 

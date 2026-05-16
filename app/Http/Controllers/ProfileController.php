@@ -101,12 +101,7 @@ class ProfileController extends Controller
             relationship: $data['relationship'] ?? null,
         ));
 
-        return response()->json([
-            'id' => $result->id,
-            'name' => $result->name,
-            'relationship' => $result->relationship,
-            'createdAt' => $result->createdAt->toIso8601String(),
-        ], 201);
+        return response()->json($result, 201);
     }
 
     /**

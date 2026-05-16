@@ -62,7 +62,7 @@ class ItemFinder
             ),
             availableContent: $itemModel->total_content - ($itemModel->consumptions_sum_amount ?? 0),
             expirationDate: $itemModel->expiration_date,
-            createdAt: $itemModel->created_at,
+            createdAt: $itemModel->created_at->toIso8601String(),
         );
     }
 

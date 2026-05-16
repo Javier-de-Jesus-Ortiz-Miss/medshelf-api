@@ -45,9 +45,9 @@ class TreatmentFinder
             frequencyValue: $record->frequency_value,
             frequencyUnit: $record->frequency_unit,
             doseQuantity: $record->dose_quantity,
-            startDate: $record->start_date,
-            endDate: $record->end_date,
-            createdAt: $record->created_at,
+            startDate: $record->start_date->toDateString(),
+            endDate: $record->end_date?->toDateString(),
+            createdAt: $record->created_at->toIso8601String(),
         );
     }
 
