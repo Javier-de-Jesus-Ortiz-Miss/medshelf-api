@@ -11,6 +11,7 @@ use App\Core\Auth\Application\UseCase\Me;
 use App\Core\Auth\Application\UseCase\RefreshToken;
 use App\Core\Auth\Application\UseCase\Register;
 use App\Core\Home\House\Model\Service\HouseCreator;
+use App\Core\Shared\Application\TransactionManager;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use OpenApi\Annotations as OA;
@@ -19,12 +20,13 @@ use Symfony\Component\HttpFoundation\Cookie;
 final class AuthController extends Controller
 {
     public function __construct(
-        private Login        $login,
-        private Register     $register,
-        private HouseCreator $houseCreator,
-        private Logout       $logout,
-        private RefreshToken $refreshToken,
-        private Me           $me,
+        private Login              $login,
+        private Register           $register,
+        private HouseCreator       $houseCreator,
+        private Logout             $logout,
+        private RefreshToken       $refreshToken,
+        private Me                 $me,
+        private TransactionManager $transactionManager,
     )
     {
     }
@@ -98,12 +100,16 @@ final class AuthController extends Controller
     public function register(RegisterRequest $request): JsonResponse
     {
         try {
-            $response = $this->register->execute($request);
+            $response = $this->transactionManager->run(function () use ($request) {
+                $authResponse = $this->register->execute($request);
 
-            $this->houseCreator->create(
-                $response->user['id'],
-                "{$response->user['name']}s House"
-            );
+                $this->houseCreator->create(
+                    $authResponse->user['id'],
+                    "{$authResponse->user['name']}s House"
+                );
+
+                return $authResponse;
+            });
 
             return response()
                 ->json($response->toArray(), 201)
