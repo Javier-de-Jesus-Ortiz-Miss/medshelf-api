@@ -15,10 +15,37 @@ class UpdateProfileTest extends TestCase
     private ProfileRepository $repository;
     private UpdateProfile $useCase;
 
-    protected function setUp(): void
+    public function test_execute_throws_not_found_when_profile_missing(): void
     {
-        $this->repository = $this->createMock(ProfileRepository::class);
-        $this->useCase    = new UpdateProfile($this->repository);
+        $this->repository
+            ->method('findById')
+            ->willReturn(null);
+
+        $this->expectException(ProfileNotFound::class);
+
+        $this->useCase->execute(new UpdateProfileRequest(
+            profileId: 'missing-uuid',
+            name: 'New Name',
+            relationship: null,
+            allergies: null,
+        ));
+    }
+
+    public function test_execute_updates_name_and_saves(): void
+    {
+        $profile = $this->makeProfile('Original');
+
+        $this->repository->method('findById')->willReturn($profile);
+        $this->repository->expects($this->once())->method('save')->with($profile);
+
+        $response = $this->useCase->execute(new UpdateProfileRequest(
+            profileId: 'profile-uuid',
+            name: 'Updated',
+            relationship: null,
+            allergies: null,
+        ));
+
+        $this->assertEquals('Updated', $response->name);
     }
 
     private function makeProfile(string $name = 'Original', ?string $relationship = null): Profile
@@ -34,37 +61,6 @@ class UpdateProfileTest extends TestCase
         );
     }
 
-    public function test_execute_throws_not_found_when_profile_missing(): void
-    {
-        $this->repository
-            ->method('findById')
-            ->willReturn(null);
-
-        $this->expectException(ProfileNotFound::class);
-
-        $this->useCase->execute(new UpdateProfileRequest(
-            profileId: 'missing-uuid',
-            name: 'New Name',
-            relationship: null,
-        ));
-    }
-
-    public function test_execute_updates_name_and_saves(): void
-    {
-        $profile = $this->makeProfile('Original');
-
-        $this->repository->method('findById')->willReturn($profile);
-        $this->repository->expects($this->once())->method('save')->with($profile);
-
-        $response = $this->useCase->execute(new UpdateProfileRequest(
-            profileId: 'profile-uuid',
-            name: 'Updated',
-            relationship: null,
-        ));
-
-        $this->assertEquals('Updated', $response->name);
-    }
-
     public function test_execute_updates_relationship_and_saves(): void
     {
         $profile = $this->makeProfile('Maria', null);
@@ -76,6 +72,7 @@ class UpdateProfileTest extends TestCase
             profileId: 'profile-uuid',
             name: null,
             relationship: 'parent',
+            allergies: null,
         ));
 
         $this->assertEquals('parent', $response->relationship);
@@ -93,6 +90,7 @@ class UpdateProfileTest extends TestCase
             profileId: 'profile-uuid',
             name: 'Any',
             relationship: null,
+            allergies: null,
         ));
 
         $this->assertEquals('profile-uuid', $response->id);
@@ -108,9 +106,16 @@ class UpdateProfileTest extends TestCase
                 profileId: 'none',
                 name: 'X',
                 relationship: null,
+                allergies: null,
             ));
         } catch (ProfileNotFound) {
             // expected
         }
+    }
+
+    protected function setUp(): void
+    {
+        $this->repository = $this->createMock(ProfileRepository::class);
+        $this->useCase = new UpdateProfile($this->repository);
     }
 }

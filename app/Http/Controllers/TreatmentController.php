@@ -389,8 +389,8 @@ class TreatmentController extends Controller
             'endDate' => $treatment->endDate?->toDateString(),
         ], JSON_THROW_ON_ERROR);
 
-        $image = QrCode::format('png')->size(300)->generate($payload);
+        $image = QrCode::format('svg')->size(300)->generate($payload);
 
-        return response($image, 200, ['Content-Type' => 'image/png']);
+        return response($image, 200, ['Content-Type' => 'image/svg+xml']);
     }
 }

@@ -25,14 +25,6 @@ class TreatmentControllerTest extends TestCase
 
     private User $actor;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->actor = User::factory()->create();
-    }
-
-    // ── Helpers ────────────────────────────────────────────────────────────
-
     public function test_store_creates_treatment_and_returns_201(): void
     {
         $profile = $this->createProfile();
@@ -49,26 +41,7 @@ class TreatmentControllerTest extends TestCase
             ->assertJsonFragment(['status' => 'active']);
     }
 
-    public function test_store_response_has_required_fields(): void
-    {
-        $profile = $this->createProfile();
-        $item = $this->createItem('continuous', 10, $this->actor);
-        $this->actor->load('house');
-
-        $this->postJson("/api/profiles/{$profile->public_id}/treatments", [
-            'itemId' => $item->public_id,
-            'dose' => 1.0,
-            'frequencyUnit' => 'hours',
-            'startDate' => now()->toDateString(),
-        ], $this->authHeaders($this->actor))
-            ->assertStatus(201)
-            ->assertJsonStructure(['id', 'status', 'dose', 'frequencyUnit', 'startDate', 'createdAt']);
-    }
-
-    public function test_store_returns_401_without_auth(): void
-    {
-        $this->postJson('/api/profiles/' . \Illuminate\Support\Str::uuid() . '/treatments', [])->assertStatus(401);
-    }
+    // ── Helpers ────────────────────────────────────────────────────────────
 
     private function createProfile(): ProfileModel
     {
@@ -136,7 +109,26 @@ class TreatmentControllerTest extends TestCase
         ]);
     }
 
-    // ── POST /api/profiles/{profileId}/treatments ─────────────────────────
+    public function test_store_response_has_required_fields(): void
+    {
+        $profile = $this->createProfile();
+        $item = $this->createItem('continuous', 10, $this->actor);
+        $this->actor->load('house');
+
+        $this->postJson("/api/profiles/{$profile->public_id}/treatments", [
+            'itemId' => $item->public_id,
+            'dose' => 1.0,
+            'frequencyUnit' => 'hours',
+            'startDate' => now()->toDateString(),
+        ], $this->authHeaders($this->actor))
+            ->assertStatus(201)
+            ->assertJsonStructure(['id', 'status', 'dose', 'frequencyUnit', 'startDate', 'createdAt']);
+    }
+
+    public function test_store_returns_401_without_auth(): void
+    {
+        $this->postJson('/api/profiles/' . Str::uuid() . '/treatments', [])->assertStatus(401);
+    }
 
     public function test_store_returns_404_when_profile_not_found(): void
     {
@@ -151,6 +143,8 @@ class TreatmentControllerTest extends TestCase
         ], $this->authHeaders($this->actor))
             ->assertStatus(404);
     }
+
+    // ── POST /api/profiles/{profileId}/treatments ─────────────────────────
 
     public function test_store_returns_422_on_validation_failure(): void
     {
@@ -172,8 +166,6 @@ class TreatmentControllerTest extends TestCase
             ->assertJsonFragment(['id' => $treatment->public_id]);
     }
 
-    // ── GET /api/treatments ────────────────────────────────────────────────
-
     private function createTreatment(string $status = 'active'): TreatmentModel
     {
         $profile = $this->createProfile();
@@ -191,7 +183,7 @@ class TreatmentControllerTest extends TestCase
         ]);
     }
 
-    // ── GET /api/treatments/{id} ───────────────────────────────────────────
+    // ── GET /api/treatments ────────────────────────────────────────────────
 
     public function test_show_returns_treatment_detail(): void
     {
@@ -202,13 +194,13 @@ class TreatmentControllerTest extends TestCase
             ->assertJsonFragment(['id' => $treatment->public_id]);
     }
 
+    // ── GET /api/treatments/{id} ───────────────────────────────────────────
+
     public function test_show_returns_404_when_not_found(): void
     {
         $this->getJson('/api/treatments/non-existent-id', $this->authHeaders($this->actor))
             ->assertStatus(404);
     }
-
-    // ── PATCH /api/treatments/{id} (update fields + status transitions) ─────
 
     public function test_update_returns_updated_treatment(): void
     {
@@ -223,9 +215,7 @@ class TreatmentControllerTest extends TestCase
             ->assertJsonFragment(['dose' => 2.0]);
     }
 
-    // ── POST /api/treatments/{id}/pause ───────────────────────────────────
-
-    // ── PATCH /api/treatments/{id} (status transitions) ──────────────────────
+    // ── PATCH /api/treatments/{id} (update fields + status transitions) ─────
 
     public function test_patch_paused_transitions_active_treatment(): void
     {
@@ -235,6 +225,10 @@ class TreatmentControllerTest extends TestCase
             ->assertStatus(200)
             ->assertJsonFragment(['status' => 'paused']);
     }
+
+    // ── POST /api/treatments/{id}/pause ───────────────────────────────────
+
+    // ── PATCH /api/treatments/{id} (status transitions) ──────────────────────
 
     public function test_patch_paused_returns_400_when_already_paused(): void
     {
@@ -271,25 +265,23 @@ class TreatmentControllerTest extends TestCase
             ->assertJsonFragment(['status' => 'completed']);
     }
 
-    // ── POST /api/treatments/{id}/consumptions ────────────────────────────
-
     public function test_store_dose_registers_dose_and_returns_201(): void
     {
         // The actor must own the house so their JWT token has the correct house_id claim
         $profile = $this->createProfile();
-        $item    = $this->createItem('continuous', 10, $this->actor);
+        $item = $this->createItem('continuous', 10, $this->actor);
 
         $this->actor->load('house');
 
         $treatment = TreatmentModel::create([
-            'public_id'       => Str::uuid(),
-            'profile_id'      => $profile->id,
-            'item_id'         => $item->id,
-            'status'          => 'active',
-            'dose'            => 1.0,
-            'frequency_unit'  => 'hours',
-            'start_date'      => now()->toDateString(),
-            'end_date'        => null,
+            'public_id' => Str::uuid(),
+            'profile_id' => $profile->id,
+            'item_id' => $item->id,
+            'status' => 'active',
+            'dose' => 1.0,
+            'frequency_unit' => 'hours',
+            'start_date' => now()->toDateString(),
+            'end_date' => null,
         ]);
 
         // Re-issue token so it includes the house_id claim set above
@@ -299,22 +291,24 @@ class TreatmentControllerTest extends TestCase
             ->assertStatus(201);
     }
 
+    // ── POST /api/treatments/{id}/consumptions ────────────────────────────
+
     public function test_store_dose_returns_400_when_treatment_not_active(): void
     {
         $profile = $this->createProfile();
-        $item    = $this->createItem('continuous', 10, $this->actor);
+        $item = $this->createItem('continuous', 10, $this->actor);
 
         $this->actor->load('house');
 
         $treatment = TreatmentModel::create([
-            'public_id'       => Str::uuid(),
-            'profile_id'      => $profile->id,
-            'item_id'         => $item->id,
-            'status'          => 'paused',
-            'dose'            => 1.0,
-            'frequency_unit'  => 'hours',
-            'start_date'      => now()->toDateString(),
-            'end_date'        => null,
+            'public_id' => Str::uuid(),
+            'profile_id' => $profile->id,
+            'item_id' => $item->id,
+            'status' => 'paused',
+            'dose' => 1.0,
+            'frequency_unit' => 'hours',
+            'start_date' => now()->toDateString(),
+            'end_date' => null,
         ]);
 
         $this->postJson("/api/treatments/{$treatment->public_id}/consumptions", [
@@ -322,8 +316,6 @@ class TreatmentControllerTest extends TestCase
         ], $this->authHeaders($this->actor))
             ->assertStatus(400);
     }
-
-    // ── GET /api/treatments/{id}/consumptions ─────────────────────────────
 
     public function test_index_doses_returns_200(): void
     {
@@ -333,22 +325,24 @@ class TreatmentControllerTest extends TestCase
             ->assertStatus(200);
     }
 
-    // ── GET /api/treatments/{id}/qr ───────────────────────────────────────
+    // ── GET /api/treatments/{id}/consumptions ─────────────────────────────
 
     public function test_qr_returns_png_image_for_existing_treatment(): void
     {
         $treatment = $this->createTreatment();
 
         $response = $this->getJson(
-            "/api/treatments/{$treatment->public_id}/qr",
+            "/api/treatments/$treatment->public_id/qr",
             $this->authHeaders($this->actor)
         );
 
         // The endpoint returns image/png — Laravel's getJson still fires the request,
         // but the content-type will be image/png, not application/json.
         $response->assertStatus(200);
-        $this->assertStringContainsString('image/png', $response->headers->get('Content-Type'));
+        $this->assertStringContainsString('image/svg+xml', $response->headers->get('Content-Type'));
     }
+
+    // ── GET /api/treatments/{id}/qr ───────────────────────────────────────
 
     public function test_qr_returns_404_for_missing_treatment(): void
     {
@@ -362,5 +356,11 @@ class TreatmentControllerTest extends TestCase
     {
         $this->getJson('/api/treatments/some-uuid/qr')
             ->assertStatus(401);
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->actor = User::factory()->create();
     }
 }

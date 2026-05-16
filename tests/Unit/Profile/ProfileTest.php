@@ -112,7 +112,7 @@ class ProfileTest extends TestCase
     {
         $profile = Profile::create(userId: 'user-id', name: 'Old Name', relationship: null, birthDate: Carbon::parse('1990-01-01'), allergies: []);
 
-        $profile->update('New Name', null);
+        $profile->update('New Name', null, null);
 
         $this->assertEquals('New Name', $profile->getName());
     }
@@ -121,7 +121,7 @@ class ProfileTest extends TestCase
     {
         $profile = Profile::create(userId: 'user-id', name: 'Maria', relationship: null, birthDate: Carbon::parse('1990-01-01'), allergies: []);
 
-        $profile->update(null, 'sibling');
+        $profile->update(null, 'sibling', null);
 
         $this->assertEquals('sibling', $profile->getRelationship());
     }
@@ -130,7 +130,7 @@ class ProfileTest extends TestCase
     {
         $profile = Profile::create(userId: 'user-id', name: 'Keep This', relationship: 'parent', birthDate: Carbon::parse('1990-01-01'), allergies: []);
 
-        $profile->update(null, 'child');
+        $profile->update(null, 'child', null);
 
         $this->assertEquals('Keep This', $profile->getName());
     }
@@ -139,7 +139,7 @@ class ProfileTest extends TestCase
     {
         $profile = Profile::create(userId: 'user-id', name: 'Maria', relationship: 'parent', birthDate: Carbon::parse('1990-01-01'), allergies: []);
 
-        $profile->update('Maria Updated', null);
+        $profile->update('Maria Updated', null, null);
 
         $this->assertEquals('parent', $profile->getRelationship());
     }
@@ -148,7 +148,7 @@ class ProfileTest extends TestCase
     {
         $profile = Profile::create(userId: 'user-id', name: 'Old', relationship: 'sibling', birthDate: Carbon::parse('1990-01-01'), allergies: []);
 
-        $profile->update('New', 'parent');
+        $profile->update('New', 'parent', null);
 
         $this->assertEquals('New', $profile->getName());
         $this->assertEquals('parent', $profile->getRelationship());
@@ -157,10 +157,10 @@ class ProfileTest extends TestCase
     public function test_update_does_not_modify_id_or_user_id(): void
     {
         $profile = Profile::create(userId: 'original-user', name: 'Name', relationship: null, birthDate: Carbon::parse('1990-01-01'), allergies: []);
-        $originalId     = $profile->getId();
+        $originalId = $profile->getId();
         $originalUserId = $profile->getUserId();
 
-        $profile->update('Different Name', 'child');
+        $profile->update('Different Name', 'child', null);
 
         $this->assertEquals($originalId, $profile->getId());
         $this->assertEquals($originalUserId, $profile->getUserId());

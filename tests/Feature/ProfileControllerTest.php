@@ -20,10 +20,10 @@ class ProfileControllerTest extends TestCase
         $user = User::factory()->create();
 
         $this->postJson('/api/profiles', [
-            'name'         => 'Maria',
+            'name' => 'Maria',
             'relationship' => 'parent',
-            'birthDate'    => '1995-08-20',
-            'allergies'    => ['Pollen', 'Penicillin'],
+            'birthDate' => '1995-08-20',
+            'allergies' => ['Pollen', 'Penicillin'],
         ], $this->authHeaders($user))
             ->assertStatus(201)
             ->assertJsonFragment([
@@ -52,7 +52,7 @@ class ProfileControllerTest extends TestCase
 
         $this->postJson('/api/profiles', [
             'relationship' => 'parent',
-            'birthDate'    => '1990-01-01',
+            'birthDate' => '1990-01-01',
         ], $this->authHeaders($user))
             ->assertStatus(422);
     }
@@ -98,7 +98,7 @@ class ProfileControllerTest extends TestCase
 
     public function test_show_returns_profile_detail(): void
     {
-        $user    = User::factory()->create();
+        $user = User::factory()->create();
         $profile = ProfileModel::factory()->create(['user_id' => $user->id]);
 
         $this->getJson("/api/profiles/{$profile->public_id}", $this->authHeaders($user))
@@ -108,7 +108,7 @@ class ProfileControllerTest extends TestCase
 
     public function test_show_response_has_required_fields(): void
     {
-        $user    = User::factory()->create();
+        $user = User::factory()->create();
         $profile = ProfileModel::factory()->create(['user_id' => $user->id]);
 
         $this->getJson("/api/profiles/{$profile->public_id}", $this->authHeaders($user))
@@ -128,10 +128,10 @@ class ProfileControllerTest extends TestCase
 
     public function test_update_changes_name_and_returns_200(): void
     {
-        $user    = User::factory()->create();
+        $user = User::factory()->create();
         $profile = ProfileModel::factory()->create(['user_id' => $user->id, 'name' => 'Old']);
 
-        $this->patchJson("/api/profiles/{$profile->public_id}", [
+        $this->patchJson("/api/profiles/$profile->public_id", [
             'name' => 'New Name',
         ], $this->authHeaders($user))
             ->assertStatus(200)
@@ -140,14 +140,14 @@ class ProfileControllerTest extends TestCase
 
     public function test_update_changes_relationship_only(): void
     {
-        $user    = User::factory()->create();
+        $user = User::factory()->create();
         $profile = ProfileModel::factory()->create([
-            'user_id'      => $user->id,
-            'name'         => 'Maria',
+            'user_id' => $user->id,
+            'name' => 'Maria',
             'relationship' => null,
         ]);
 
-        $this->patchJson("/api/profiles/{$profile->public_id}", [
+        $this->patchJson("/api/profiles/$profile->public_id", [
             'relationship' => 'sibling',
         ], $this->authHeaders($user))
             ->assertStatus(200)
@@ -172,10 +172,10 @@ class ProfileControllerTest extends TestCase
 
     public function test_update_response_has_required_fields(): void
     {
-        $user    = User::factory()->create();
+        $user = User::factory()->create();
         $profile = ProfileModel::factory()->create(['user_id' => $user->id]);
 
-        $this->patchJson("/api/profiles/{$profile->public_id}", [
+        $this->patchJson("/api/profiles/$profile->public_id", [
             'name' => 'Updated',
         ], $this->authHeaders($user))
             ->assertStatus(200)

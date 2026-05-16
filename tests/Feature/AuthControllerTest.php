@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\Feature\Traits\WithJwtAuth;
 use Tests\TestCase;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthControllerTest extends TestCase
 {
@@ -17,8 +18,8 @@ class AuthControllerTest extends TestCase
     public function test_register_creates_user_and_returns_201(): void
     {
         $this->postJson('/api/auth/register', [
-            'name'     => 'Test User',
-            'email'    => 'test@example.com',
+            'name' => 'Test User',
+            'email' => 'test@example.com',
             'password' => 'password123',
         ])
             ->assertStatus(201)
@@ -31,7 +32,7 @@ class AuthControllerTest extends TestCase
     public function test_register_returns_422_when_email_missing(): void
     {
         $this->postJson('/api/auth/register', [
-            'name'     => 'Test User',
+            'name' => 'Test User',
             'password' => 'password123',
         ])->assertStatus(422);
     }
@@ -39,8 +40,8 @@ class AuthControllerTest extends TestCase
     public function test_register_returns_422_when_password_too_short(): void
     {
         $this->postJson('/api/auth/register', [
-            'name'     => 'Test User',
-            'email'    => 'test@example.com',
+            'name' => 'Test User',
+            'email' => 'test@example.com',
             'password' => 'abc',      // min is 5, so 3 chars fails
         ])->assertStatus(422);
     }
@@ -50,8 +51,8 @@ class AuthControllerTest extends TestCase
         User::factory()->create(['email' => 'taken@example.com']);
 
         $this->postJson('/api/auth/register', [
-            'name'     => 'Another User',
-            'email'    => 'taken@example.com',
+            'name' => 'Another User',
+            'email' => 'taken@example.com',
             'password' => 'password123',
         ])->assertStatus(422);
     }
@@ -61,12 +62,12 @@ class AuthControllerTest extends TestCase
     public function test_login_with_valid_credentials_returns_200(): void
     {
         User::factory()->create([
-            'email'    => 'user@example.com',
+            'email' => 'user@example.com',
             'password' => bcrypt('password123'),
         ]);
 
         $this->postJson('/api/auth/login', [
-            'email'    => 'user@example.com',
+            'email' => 'user@example.com',
             'password' => 'password123',
         ])
             ->assertStatus(200)
@@ -79,12 +80,12 @@ class AuthControllerTest extends TestCase
     public function test_login_with_wrong_password_returns_401(): void
     {
         User::factory()->create([
-            'email'    => 'user@example.com',
+            'email' => 'user@example.com',
             'password' => bcrypt('correct-password'),
         ]);
 
         $this->postJson('/api/auth/login', [
-            'email'    => 'user@example.com',
+            'email' => 'user@example.com',
             'password' => 'wrong-password',
         ])->assertStatus(401);
     }
@@ -92,7 +93,7 @@ class AuthControllerTest extends TestCase
     public function test_login_with_unknown_email_returns_401(): void
     {
         $this->postJson('/api/auth/login', [
-            'email'    => 'nobody@example.com',
+            'email' => 'nobody@example.com',
             'password' => 'password123',
         ])->assertStatus(401);
     }
@@ -103,14 +104,14 @@ class AuthControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $this->getJson('/api/auth/me', $this->authHeaders($user))
+        $this->getJson('/api/auth/account', $this->authHeaders($user))
             ->assertStatus(200)
             ->assertJsonFragment(['email' => $user->email]);
     }
 
     public function test_me_returns_401_without_token(): void
     {
-        $this->getJson('/api/auth/me')
+        $this->getJson('/api/auth/account')
             ->assertStatus(401);
     }
 
@@ -161,22 +162,22 @@ class AuthControllerTest extends TestCase
         $user = User::factory()->create();
 
         // Use X-Auth-Type: JWT so the middleware passes the Authorization header through directly
-        $this->getJson('/api/auth/me', $this->authHeaders($user, ['X-Auth-Type' => 'JWT']))
+        $this->getJson('/api/auth/account', $this->authHeaders($user, ['X-Auth-Type' => 'JWT']))
             ->assertStatus(200)
             ->assertJsonFragment(['email' => $user->email]);
     }
 
     public function test_cookie_auth_type_header_grants_access(): void
     {
-        $user  = User::factory()->create();
-        $token = \Tymon\JWTAuth\Facades\JWTAuth::fromUser($user);
+        $user = User::factory()->create();
+        $token = JWTAuth::fromUser($user);
 
         // Pass token via cookie with X-Auth-Type: Cookie (default behaviour).
         // access_token is excluded from EncryptCookies, so we pass the raw JWT.
-        $this->call('GET', '/api/auth/me', [], ['access_token' => $token], [], [
-            'HTTP_X-Auth-Type'  => 'Cookie',
-            'HTTP_ACCEPT'       => 'application/json',
+        $this->call('GET', '/api/auth/account', [], ['access_token' => $token], [], [
+            'HTTP_X-Auth-Type' => 'Cookie',
+            'HTTP_ACCEPT' => 'application/json',
         ])->assertStatus(200)
-          ->assertJsonFragment(['email' => $user->email]);
+            ->assertJsonFragment(['email' => $user->email]);
     }
 }
